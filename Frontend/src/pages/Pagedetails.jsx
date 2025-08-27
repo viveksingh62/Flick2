@@ -1,13 +1,13 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 function Pagedetails() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   let [data, setdata] = useState(null);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -44,6 +44,21 @@ function Pagedetails() {
       <p>{data.platform}</p>
       <p>{data.description}</p>
       <p>{data.price}₹</p>
+      <button
+        className="mt-8 px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
+        onClick={() => {
+          fetch(`http://localhost:8080/prompt/${data._id}`, {
+            method: "DELETE",
+          }).then((res) => {
+            if (res.ok) {
+              console.log("delete");
+              navigate("/");
+            }
+          });
+        }}
+      >
+        Delete
+      </button>
     </div>
   );
 }

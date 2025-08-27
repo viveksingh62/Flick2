@@ -1,16 +1,13 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import Homepage from "./pages/Homepage";
-
-import { createBrowserRouter, RouterProvider } from "react-router";
+import AuthProvider from "./context/AuthContext";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Pagedetails from "./pages/Pagedetails";
 import New from "./component/New";
-
+import Signup from "./pages/Signup";
+import Login from "./pages/login";
+import ProtectedRoute from "./component/ProtectedRoute";
 function App() {
-  const [count, setCount] = useState(0);
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -22,12 +19,26 @@ function App() {
     },
     {
       path: "/prompt",
-      element: <New />,
+      element: (
+        <ProtectedRoute>
+          <New />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/signup",
+      element: <Signup />,
+    },
+    {
+      path: "/login",
+      element: <Login />,
     },
   ]);
   return (
     <>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </>
   );
 }

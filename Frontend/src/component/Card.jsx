@@ -9,7 +9,7 @@ function Card({ data }) {
   return (
     <Link
       to={`/prompt/${data._id}`} // 👈 redirects to details page with ID
-      className=" bg-[#DCFCE7] w-64 sm:w-72 rounded-xl border shadow-md p-3 flex flex-col hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+      className=" bg-[#E0F7F4] w-full  rounded-xl border-emerald-200 shadow-md p-3 flex flex-col hover:shadow-lg transition-shadow duration-200 cursor-pointer"
     >
       {/* Image */}
       <div className="overflow-hidden rounded-lg mb-3">

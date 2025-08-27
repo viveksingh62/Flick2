@@ -25,18 +25,16 @@ function New() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),
-      }).then(() => {
-        navigate("/");
       });
 
+      console.log(formdata);
+      setformdata({ platform: "", description: "", price: "", images: "" });
+      navigate("/");
       const data = await res.json();
       console.log("server response", data);
     } catch (error) {
       console.log("Error:", error);
     }
-
-    console.log(formdata);
-    setformdata({ platform: "", description: "", price: "", images: "" });
   };
 
   return (
