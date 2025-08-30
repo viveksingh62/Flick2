@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Signup() {
   const navigate = useNavigate();
+   const { setUser } = useAuth(); // update auth context
   let [formdata, setformdata] = useState({
     email: "",
     username: "",
@@ -22,13 +24,19 @@ function Signup() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),
+          credentials: "include",
       });
+      const data = await res.json();
       if (!res.ok) {
         throw new Error("Signup failed");
-      }
+
+      } 
+      
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setformdata({ email: "", username: "", password: "" });
       navigate("/");
-      const data = await res.json();
+      
       console.log("server response", data);
     } catch (error) {
       console.log("Error", error);

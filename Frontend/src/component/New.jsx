@@ -24,7 +24,9 @@ function New() {
       const res = await fetch("http://localhost:8080/prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials:"include",
         body: JSON.stringify(formdata),
+
       });
 
       console.log(formdata);

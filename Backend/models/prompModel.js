@@ -7,5 +7,9 @@ const promptSchema = new Schema({
 
   price: { type: Number },
   images: { type: String },
+  owner:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User"
+  }
 });
 module.exports = mongoose.model("Prompt", promptSchema);

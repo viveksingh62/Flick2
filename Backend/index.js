@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  }),
+  })
 );
 //session
 app.use(
@@ -32,8 +32,12 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  }),
+  })
 );
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ message: "You must be logged in" });
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -71,17 +75,20 @@ app.listen(8080, () => {
 
 //home route
 app.get("/", async (req, res) => {
-  const data = await Prompt.find({});
+  const data = await Prompt.find({}).populate("owner");
   res.json(data);
 });
 
 //show route
 app.get("/prompt/:id", async (req, res) => {
   try {
-    const prompt = await Prompt.findById(req.params.id);
+    const prompt = await Prompt.findById(req.params.id).populate("owner");
+    console.log(prompt);
     if (!prompt) {
       return res.status(404).json({ message: "Promot not found" });
     }
+ 
+
     res.json(prompt);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -89,15 +96,21 @@ app.get("/prompt/:id", async (req, res) => {
 });
 
 //add route
-app.post("/prompt", async (req, res) => {
+app.post("/prompt", isLoggedIn, async (req, res) => {
   try {
-    console.log("Received body:", req.body); // ✅ debug
+    // console.log("Received body:", req.body); // ✅ debug
 
     let { platform, description, price, images } = req.body;
-
-    const newDat = new Prompt({ platform, description, price, images });
+    const newDat = new Prompt({
+      platform,
+      description,
+      price,
+      images,
+      owner: req.user._id,
+    });
 
     let newData = await newDat.save();
+
     console.log("file", newData);
     res.json({ message: "Data saved successfully", user: newData });
   } catch (err) {
@@ -106,11 +119,22 @@ app.post("/prompt", async (req, res) => {
 });
 
 //delete route
-app.delete("/prompt/:id", async (req, res) => {
+app.delete("/prompt/:id",isLoggedIn, async (req, res) => {
   try {
-    const deletedprompt = await Prompt.findByIdAndDelete(req.params.id);
-    if (!deletedprompt)
+    if (!req.user) {
+      return res.status(401).json({ message: "you must be logged in" });
+    }
+    const prompt = await Prompt.findById(req.params.id);
+
+    if (!prompt) {
       return res.status(404).json({ message: "Prompt not found" });
+    }
+    if (!prompt.owner.equals(req.user._id)) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this prompt" });
+    }
+    await prompt.deleteOne();
     res.json({ message: "Deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

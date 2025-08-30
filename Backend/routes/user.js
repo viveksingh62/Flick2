@@ -6,16 +6,29 @@ router.get("/signup", (req, res) => {
   res.send("signup form");
 });
 
-router.post("/signup", async (req, res) => {
-  let { username, email, password } = req.body;
 
-  const newUser = new User({ username, email });
-  let data = await User.register(newUser, password);
-  console.log(data);
+
+router.post("/signup", async (req, res, next) => {
+  try {
+    let { username, email, password } = req.body;
+
+    const newUser = new User({ username, email });
+    let user = await User.register(newUser, password); // register user
+
+    // automatically log in
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.json({
+        success: true,
+        message: "Signup and login successful",
+        user: { id: user._id, username: user.username, email: user.email },
+      });
+    });
+  } catch (err) {
+    next(err);
+  }
 });
-router.get("/login", (req, res) => {
-  res.send("signup form");
-});
+
 
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
@@ -59,7 +72,7 @@ router.get("/check-auth", (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", (req, res,next) => {
   req.logout(function (err) {
     if (err) return next(err);
     res.clearCookie("connect.sid");
