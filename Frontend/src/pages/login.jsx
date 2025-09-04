@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 function Login() {
   const { setUser } = useAuth();
@@ -36,7 +36,7 @@ function Login() {
         // ✅ immediately update context so no refresh needed
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
-         navigate(from, { replace: true }); // go back to original path
+        navigate(from, { replace: true }); // go back to original path
       } else {
         alert("Login failed");
       }
@@ -48,7 +48,7 @@ function Login() {
 
       // success
       setFormdata({ username: "", password: "" });
- 
+
       console.log("Login success:", data);
     } catch (err) {
       console.error("Error:", err);

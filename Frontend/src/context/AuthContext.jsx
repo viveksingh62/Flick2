@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
           credentials: "include", // include cookies
         });
         const data = await res.json();
- 
+
         if (data.authenticated) {
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));

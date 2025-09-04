@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 function MyPurchases() {
+    const navigate = useNavigate()
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchPurchases = async () => {
       try {
         const res = await fetch("http://localhost:8080/my-purchases", {
           credentials: "include",
         });
         if (!res.ok) {
-          throw new Error("Failed to fetch purchases");
+           navigate("/login"); // or "/"
+  return; 
         }
         const data = await res.json();
         setPurchases(data);
@@ -37,10 +39,7 @@ function MyPurchases() {
       ) : (
         <div className="grid gap-6">
           {purchases.map((purchase) => (
-            <div
-              key={purchase._id}
-              className="p-4 border rounded-lg shadow-sm"
-            >
+            <div key={purchase._id} className="p-4 border rounded-lg shadow-sm">
               <h3 className="text-xl font-semibold">
                 {purchase.promptId?.platform}
               </h3>

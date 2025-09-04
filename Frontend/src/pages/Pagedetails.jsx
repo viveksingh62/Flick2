@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Await, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Pagedetails() {
@@ -9,6 +9,7 @@ function Pagedetails() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+  const [alreadyBought, setAlreadyBought] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +28,23 @@ function Pagedetails() {
 
         const json = await res.json();
         setData(json);
+
+        if (user) {
+          const purchaseres = await fetch(
+            "http://localhost:8080/my-purchases",
+            {
+              credentials: "include",
+              method: "GET",
+            },
+          );
+          if (purchaseres.ok) {
+            const purchases = await purchaseres.json();
+            const hasBought = purchases.some(
+              (p) => String(p.promptId?._id) == String(json._id),
+            );
+            setAlreadyBought(hasBought);
+          }
+        }
       } catch (err) {
         console.error(err);
         setError(err.message);
@@ -36,7 +54,7 @@ function Pagedetails() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, user]);
 
   const handleBuy = async () => {
     setMessage(null);
@@ -53,6 +71,7 @@ function Pagedetails() {
       }
 
       setMessage({ type: "success", text: result.message });
+      setAlreadyBought(true);
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     }
@@ -85,7 +104,7 @@ function Pagedetails() {
                 {
                   method: "DELETE",
                   credentials: "include",
-                }
+                },
               );
               if (res.ok) {
                 navigate("/");
@@ -99,12 +118,18 @@ function Pagedetails() {
         </button>
       )}
 
-      <button
-        className="w-full px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-600 transition"
-        onClick={handleBuy}
-      >
-        Buy Prompt
-      </button>
+      {alreadyBought ? (
+        <p className="w-full text-center py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg">
+          Already Bought
+        </p>
+      ) : (
+        <button
+          className="w-full px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-600 transition"
+          onClick={handleBuy}
+        >
+          Buy Prompt
+        </button>
+      )}
 
       {message && (
         <p

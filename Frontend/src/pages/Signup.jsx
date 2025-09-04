@@ -4,12 +4,14 @@ import { useAuth } from "../context/AuthContext";
 
 function Signup() {
   const navigate = useNavigate();
-   const { setUser } = useAuth(); // update auth context
+  const { setUser } = useAuth(); // update auth context
+
   let [formdata, setformdata] = useState({
     email: "",
     username: "",
     password: "",
   });
+  let [error, setError] = useState(""); // track errors
 
   let handlechange = (e) => {
     setformdata((currdata) => {
@@ -19,27 +21,30 @@ function Signup() {
 
   let handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // reset before new request
+
     try {
       const res = await fetch("http://localhost:8080/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),
-          credentials: "include",
+        credentials: "include",
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error("Signup failed");
 
-      } 
-      
+      const data = await res.json();
+
+      if (!res.ok) {
+        // show backend error if available
+        throw new Error(data.message || "Signup failed");
+      }
+
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
       setformdata({ email: "", username: "", password: "" });
       navigate("/");
-      
-      console.log("server response", data);
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error:", error);
+      setError(error.message); // show in UI
     }
   };
 
@@ -52,6 +57,13 @@ function Signup() {
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
           Sign Up
         </h2>
+
+        {/* Show error if exists */}
+        {error && (
+          <div className="bg-red-100 text-red-600 p-2 rounded-md text-sm text-center">
+            {error}
+          </div>
+        )}
 
         <div className="flex flex-col">
           <label htmlFor="email" className="text-sm font-medium text-gray-600">

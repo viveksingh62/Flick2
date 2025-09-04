@@ -37,8 +37,8 @@ export default function Navbar({ setSearchResults }) {
     if (selected) {
       // Redirect to category page or call API filter
       setTimeout(() => {
-      window.location.href = `/categories/${selected.value}`;
-    }, 200);
+        window.location.href = `/categories/${selected.value}`;
+      }, 200);
     }
   };
 
@@ -48,9 +48,13 @@ export default function Navbar({ setSearchResults }) {
       <nav className="bg-[#0A2540] text-white px-6 py-3 shadow-md flex items-center justify-between rounded-lg mb-20">
         {/* Left: Logo */}
         <div className="flex items-center space-x-2">
-      <Link to="/">
-    <img src="/logo.png" alt="Logo" className="w-full h-13 cursor-pointer" />
-  </Link>
+          <Link to="/">
+            <img
+              src="/logo.png"
+              alt="Logo"
+              className="w-full h-13 cursor-pointer"
+            />
+          </Link>
         </div>
 
         {/* Search (Desktop only) */}
@@ -71,67 +75,61 @@ export default function Navbar({ setSearchResults }) {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link
-            to="/prompt"
-            className="px-4 py-1 rounded-lg hover:bg-white/10"
-          >
+          <Link to="/prompt" className="px-4 py-1 rounded-lg hover:bg-white/10">
             Create
           </Link>
 
           {/* Category Dropdown (Desktop) */}
           <div className="hidden md:flex w-48 mx-4">
             <Select
-    options={categoryOptions}
-    value={selectedCategory}
-    onChange={handleCategoryChange}
-    placeholder="Select Category"
-    isSearchable={false}  // ✅ disable typing, only dropdown
-    menuPortalTarget={document.body}
-    styles={{
-      control: (base) => ({
-        ...base,
-        borderRadius: "0.5rem",
-        backgroundColor: "#0A2540",
-        borderColor: "rgba(255,255,255,0.2)",
-        color: "white",
-        padding: "2px 6px",
-        minHeight: "38px",
-      }),
-      singleValue: (base) => ({
-        ...base,
-        color: "white",
-      }),
-      placeholder: (base) => ({
-        ...base,
-        color: "rgba(255,255,255,0.6)",
-      }),
-      menuPortal: (base) => ({
-        ...base,
-        zIndex: 9999,
-      }),
-      menu: (base) => ({
-        ...base,
-        zIndex: 9999,
-        backgroundColor: "#0A2540",
-      }),
-      option: (base, { isFocused, isSelected }) => ({
-        ...base,
-        backgroundColor: isSelected
-          ? "#10B981" // emerald green
-          : isFocused
-          ? "rgba(16, 185, 129, 0.3)"
-          : "transparent",
-        color: "white",
-        cursor: "pointer",
-      }),
-    }}
-  />
+              options={categoryOptions}
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              placeholder="Select Category"
+              isSearchable={false} // ✅ disable typing, only dropdown
+              menuPortalTarget={document.body}
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  backgroundColor: "#0A2540",
+                  borderColor: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  padding: "2px 6px",
+                  minHeight: "38px",
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: "white",
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: "rgba(255,255,255,0.6)",
+                }),
+                menuPortal: (base) => ({
+                  ...base,
+                  zIndex: 9999,
+                }),
+                menu: (base) => ({
+                  ...base,
+                  zIndex: 9999,
+                  backgroundColor: "#0A2540",
+                }),
+                option: (base, { isFocused, isSelected }) => ({
+                  ...base,
+                  backgroundColor: isSelected
+                    ? "#10B981" // emerald green
+                    : isFocused
+                      ? "rgba(16, 185, 129, 0.3)"
+                      : "transparent",
+                  color: "white",
+                  cursor: "pointer",
+                }),
+              }}
+            />
           </div>
 
-          <Link
-            to="/about"
-            className="px-4 py-1 rounded-lg hover:bg-white/10"
-          >
+          <Link to="/about" className="px-4 py-1 rounded-lg hover:bg-white/10">
             About
           </Link>
 
@@ -152,15 +150,19 @@ export default function Navbar({ setSearchResults }) {
             </>
           ) : (
             <>
-            <button
-              onClick={logout}
-              className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
-            >
-              Logout
-            </button>
-          <Link to="/my-purchases"  className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">My Purchases</Link>
-</>
-
+              <button
+                onClick={logout}
+                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
+              >
+                Logout
+              </button>
+              <Link
+                to="/my-purchases"
+                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
+              >
+                My Purchases
+              </Link>
+            </>
           )}
         </div>
 
@@ -192,7 +194,7 @@ export default function Navbar({ setSearchResults }) {
           {/* 🔎 Search inside sidebar (mobile) */}
           <form onSubmit={handleSearch} className="relative w-full">
             <input
-           type="text"
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search..."
@@ -205,53 +207,52 @@ export default function Navbar({ setSearchResults }) {
 
           {/* Category Dropdown (Mobile) */}
           <div className="w-full">
-          <Select
-  options={categoryOptions}
-  value={selectedCategory}
-  onChange={handleCategoryChange}
-  placeholder="Select Category"
-  isSearchable={false}  //  only dropdown, no typing
-  menuPortalTarget={document.body} // ✅ render at root level
-  styles={{
-    control: (base) => ({
-      ...base,
-      borderRadius: "0.5rem",
-      backgroundColor: "#0A2540",
-      borderColor: "rgba(255,255,255,0.2)",
-      color: "white",
-      padding: "2px 6px",
-      minHeight: "38px",
-    }),
-    singleValue: (base) => ({
-      ...base,
-      color: "white",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "rgba(255,255,255,0.6)",
-    }),
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,   // ✅ ensures dropdown stays above navbar
-    }),
-    menu: (base) => ({
-      ...base,
-      zIndex: 9999,   // ✅ ensures dropdown stays above overlay
-      backgroundColor: "#0A2540",
-    }),
-    option: (base, { isFocused, isSelected }) => ({
-      ...base,
-      backgroundColor: isSelected
-        ? "#10B981" // emerald green
-        : isFocused
-        ? "rgba(16, 185, 129, 0.3)"
-        : "transparent",
-      color: "white",
-      cursor: "pointer",
-    }),
-  }}
-/>
-
+            <Select
+              options={categoryOptions}
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              placeholder="Select Category"
+              isSearchable={false} //  only dropdown, no typing
+              menuPortalTarget={document.body} // ✅ render at root level
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  backgroundColor: "#0A2540",
+                  borderColor: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  padding: "2px 6px",
+                  minHeight: "38px",
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: "white",
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: "rgba(255,255,255,0.6)",
+                }),
+                menuPortal: (base) => ({
+                  ...base,
+                  zIndex: 9999, // ✅ ensures dropdown stays above navbar
+                }),
+                menu: (base) => ({
+                  ...base,
+                  zIndex: 9999, // ✅ ensures dropdown stays above overlay
+                  backgroundColor: "#0A2540",
+                }),
+                option: (base, { isFocused, isSelected }) => ({
+                  ...base,
+                  backgroundColor: isSelected
+                    ? "#10B981" // emerald green
+                    : isFocused
+                      ? "rgba(16, 185, 129, 0.3)"
+                      : "transparent",
+                  color: "white",
+                  cursor: "pointer",
+                }),
+              }}
+            />
           </div>
 
           <Link

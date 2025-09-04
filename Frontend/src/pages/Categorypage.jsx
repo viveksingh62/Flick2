@@ -16,13 +16,12 @@ export default function CategoryPage() {
   }, [category]);
 
   return (
-   
     <div className="p-6">
-         <Navbar />
-   <div className="grid grid-cols-1 gap-6 justify-items-center sm:grid-cols-2  md:grid-cols-3 xl:grid-cols-5 ">
+      <Navbar />
+      <div className="grid grid-cols-1 gap-6 justify-items-center sm:grid-cols-2  md:grid-cols-3 xl:grid-cols-5 ">
         {prompts.map((item) => (
           <Card key={item._id} data={item} />
-        ))} 
+        ))}
       </div>
     </div>
   );

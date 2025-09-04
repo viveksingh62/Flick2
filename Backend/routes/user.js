@@ -2,22 +2,20 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const passport = require("passport");
-router.get("/signup", (req, res) => {
-  res.send("signup form");
-});
 
-
-
-router.post("/signup", async (req, res, next) => {
+// Signup route
+router.post("/signup", async (req, res) => {
   try {
-    let { username, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     const newUser = new User({ username, email });
-    let user = await User.register(newUser, password); // register user
+    const user = await User.register(newUser, password);
 
-    // automatically log in
+    // Auto-login after signup
     req.logIn(user, (err) => {
-      if (err) return next(err);
+      if (err) {
+        return res.status(500).json({ success: false, message: "Login failed" });
+      }
       return res.json({
         success: true,
         message: "Signup and login successful",
@@ -25,38 +23,43 @@ router.post("/signup", async (req, res, next) => {
       });
     });
   } catch (err) {
-    next(err);
+    // Handle duplicate email or validation errors
+    if (err.name === "UserExistsError") {
+      return res.status(400).json({ success: false, message: "User already exists" });
+    }
+    if (err.code === 11000) {
+      return res.status(400).json({ success: false, message: "Email already registered" });
+    }
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Something went wrong" });
   }
 });
 
-
+// Login route
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
+    if (err) return res.status(500).json({ success: false, message: "Auth error" });
 
     if (!user) {
-      // authentication failed
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: info?.message || "Invalid username or password",
-        });
+      return res.status(401).json({
+        success: false,
+        message: info?.message || "Invalid username or password",
+      });
     }
 
-    // log in the user
     req.logIn(user, (err) => {
-      if (err) return next(err);
+      if (err) return res.status(500).json({ success: false, message: "Login failed" });
 
       return res.json({
         success: true,
         message: "Login successful",
-        user: { id: user._id, username: user.username },
+        user: { id: user._id, username: user.username, email: user.email },
       });
     });
   })(req, res, next);
 });
 
+// Check authentication
 router.get("/check-auth", (req, res) => {
   if (req.isAuthenticated()) {
     return res.json({
@@ -72,9 +75,10 @@ router.get("/check-auth", (req, res) => {
   }
 });
 
-router.post("/logout", (req, res,next) => {
+// Logout
+router.post("/logout", (req, res, next) => {
   req.logout(function (err) {
-    if (err) return next(err);
+    if (err) return res.status(500).json({ success: false, message: "Logout failed" });
     res.clearCookie("connect.sid");
     return res.json({ success: true, message: "Logout successfully" });
   });

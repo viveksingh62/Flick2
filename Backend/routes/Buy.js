@@ -15,7 +15,7 @@ router.post("/buy/:id", async (req, res) => {
     if (!prompt) return res.status(404).json({ message: "Prompt not found" });
 
     const email = req.user.email;
-    console.log(email);
+  
     const alreadyBought = await Purchase.findOne({
       email: email,
       promptId: prompt._id,
@@ -31,7 +31,7 @@ router.post("/buy/:id", async (req, res) => {
       promptId: prompt._id,
     });
     let result = await data.save();
-    console.log(result);
+   
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -59,7 +59,7 @@ router.get("/my-purchases", async (req, res) => {
       res.status(401).json({ message: "You must logged in" });
     }
     const purchases = await Purchase.find({ email: req.user.email }).populate(
-      "promptId"
+      "promptId",
     );
     res.json(purchases);
   } catch (err) {

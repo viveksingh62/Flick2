@@ -9,7 +9,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/User.js");
 const userRouter = require("./routes/user.js");
-const buyRouter = require("./routes/Buy.js")
+const buyRouter = require("./routes/Buy.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  })
+  }),
 );
 //session
 app.use(
@@ -33,7 +33,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  })
+  }),
 );
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
@@ -56,7 +56,7 @@ app.get("/demouser", async (req, res) => {
   console.log(newUser);
 });
 app.use("/", userRouter);
-app.use("/",buyRouter)
+app.use("/", buyRouter);
 // app.get("/test",(req,res)=>{
 
 //   req.session.name="vivek"
@@ -85,13 +85,12 @@ app.get("/", async (req, res) => {
 app.get("/categories/:category", async (req, res) => {
   try {
     const category = req.params.category;
-    const prompts = await Prompt.find({ platform: category }); 
+    const prompts = await Prompt.find({ platform: category });
     res.json(prompts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // Search route
 app.get("/search", async (req, res) => {
@@ -111,14 +110,11 @@ app.get("/search", async (req, res) => {
   }
 });
 
-
-
-
 //show route
 app.get("/prompt/:id", async (req, res) => {
   try {
     const prompt = await Prompt.findById(req.params.id).populate("owner");
-    
+
     if (!prompt) {
       return res.status(404).json({ message: "Promot not found" });
     }
@@ -174,4 +170,3 @@ app.delete("/prompt/:id", isLoggedIn, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-

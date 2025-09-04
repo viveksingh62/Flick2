@@ -34,11 +34,12 @@ function App() {
     {
       path: "/login",
       element: <Login />,
-    },  {
+    },
+    {
       path: "/categories/:category", // 👈 new route
       element: <CategoryPage />,
-    },{ path:"/my-purchases", element:<MyPurchases />}
-
+    },
+    { path: "/my-purchases", element: <MyPurchases /> },
   ]);
   return (
     <>
