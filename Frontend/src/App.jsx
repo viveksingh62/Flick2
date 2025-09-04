@@ -7,6 +7,8 @@ import New from "./component/New";
 import Signup from "./pages/Signup";
 import Login from "./pages/login";
 import ProtectedRoute from "./component/ProtectedRoute";
+import CategoryPage from "./pages/Categorypage";
+import MyPurchases from "./pages/MyPurchased";
 function App() {
   const router = createBrowserRouter([
     {
@@ -32,7 +34,11 @@ function App() {
     {
       path: "/login",
       element: <Login />,
-    },
+    },  {
+      path: "/categories/:category", // 👈 new route
+      element: <CategoryPage />,
+    },{ path:"/my-purchases", element:<MyPurchases />}
+
   ]);
   return (
     <>

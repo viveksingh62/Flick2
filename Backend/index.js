@@ -9,11 +9,12 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/User.js");
 const userRouter = require("./routes/user.js");
-
+const buyRouter = require("./routes/Buy.js")
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.set("trust proxy", 1); // trust first proxy
+require("dotenv").config();
 
 app.use(
   cors({
@@ -55,6 +56,7 @@ app.get("/demouser", async (req, res) => {
   console.log(newUser);
 });
 app.use("/", userRouter);
+app.use("/",buyRouter)
 // app.get("/test",(req,res)=>{
 
 //   req.session.name="vivek"
@@ -78,16 +80,48 @@ app.get("/", async (req, res) => {
   const data = await Prompt.find({}).populate("owner");
   res.json(data);
 });
+//filter
+// Get prompts by category
+app.get("/categories/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+    const prompts = await Prompt.find({ platform: category }); 
+    res.json(prompts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// Search route
+app.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query) {
+      return res.json([]);
+    }
+
+    const results = await Prompt.find({
+      $text: { $search: query },
+    }).populate("owner");
+
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 
 //show route
 app.get("/prompt/:id", async (req, res) => {
   try {
     const prompt = await Prompt.findById(req.params.id).populate("owner");
-    console.log(prompt);
+    
     if (!prompt) {
       return res.status(404).json({ message: "Promot not found" });
     }
- 
 
     res.json(prompt);
   } catch (err) {
@@ -119,7 +153,7 @@ app.post("/prompt", isLoggedIn, async (req, res) => {
 });
 
 //delete route
-app.delete("/prompt/:id",isLoggedIn, async (req, res) => {
+app.delete("/prompt/:id", isLoggedIn, async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "you must be logged in" });
@@ -140,3 +174,4 @@ app.delete("/prompt/:id",isLoggedIn, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
