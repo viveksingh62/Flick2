@@ -3,6 +3,7 @@ const router = express.Router();
 const Purchase = require("../models/Purchase.js");
 const Prompt = require("../models/prompModel.js");
 const nodemailer = require("nodemailer");
+const User = require("../models/User.js");
 
 router.post("/buy/:id", async (req, res) => {
   try {
@@ -11,11 +12,11 @@ router.post("/buy/:id", async (req, res) => {
     }
 
     const { id } = req.params;
-    const prompt = await Prompt.findById(id);
+    const prompt = await Prompt.findById(id).populate("owner");
     if (!prompt) return res.status(404).json({ message: "Prompt not found" });
 
     const email = req.user.email;
-  
+    console.log(email);
     const alreadyBought = await Purchase.findOne({
       email: email,
       promptId: prompt._id,
@@ -30,9 +31,9 @@ router.post("/buy/:id", async (req, res) => {
       email: email,
       promptId: prompt._id,
     });
-    let result = await data.save();
-   
-
+    await data.save();
+    console.log(prompt.owner);
+  
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -47,6 +48,18 @@ router.post("/buy/:id", async (req, res) => {
       text: prompt.description,
     });
     res.status(200).json({ message: "Prompt sent to your email!" });
+      let rank = await User.findByIdAndUpdate(
+      prompt.owner,
+      { $inc: { score: 10 } },
+      { new: true }
+    );
+    console.log(rank)
+    console.log("Buyer email:", req.user.email);
+console.log("Prompt owner:", prompt);
+
+const seller = await User.findById(prompt.owner);
+console.log("Seller fetched from DB:", seller);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong" });
@@ -59,7 +72,7 @@ router.get("/my-purchases", async (req, res) => {
       res.status(401).json({ message: "You must logged in" });
     }
     const purchases = await Purchase.find({ email: req.user.email }).populate(
-      "promptId",
+      "promptId"
     );
     res.json(purchases);
   } catch (err) {

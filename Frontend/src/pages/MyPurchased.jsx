@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 function MyPurchases() {
     const navigate = useNavigate()
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,10 @@ function MyPurchases() {
   if (error) return <h1 className="text-red-500">{error}</h1>;
 
   return (
+    <div className="p-4">
+        <Navbar/>
     <div className="max-w-3xl mx-auto p-6">
+       
       <h2 className="text-2xl font-bold mb-6">My Purchased Prompts</h2>
       {purchases.length === 0 ? (
         <p>You haven’t bought any prompts yet.</p>
@@ -52,7 +56,9 @@ function MyPurchases() {
         </div>
       )}
     </div>
-  );
+     </div>
+  )
+ 
 }
 
 export default MyPurchases;

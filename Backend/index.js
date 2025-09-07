@@ -10,6 +10,10 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/User.js");
 const userRouter = require("./routes/user.js");
 const buyRouter = require("./routes/Buy.js");
+const leaderboardRouter = require("./routes/leaderboard");
+
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -20,7 +24,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  }),
+  })
 );
 //session
 app.use(
@@ -33,7 +37,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  }),
+  })
 );
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
@@ -57,6 +61,7 @@ app.get("/demouser", async (req, res) => {
 });
 app.use("/", userRouter);
 app.use("/", buyRouter);
+app.use("/leaderboard", leaderboardRouter);
 // app.get("/test",(req,res)=>{
 
 //   req.session.name="vivek"

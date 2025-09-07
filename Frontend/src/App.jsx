@@ -3,10 +3,10 @@ import Homepage from "./pages/Homepage";
 import AuthProvider from "./context/AuthContext";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Pagedetails from "./pages/Pagedetails";
-import New from "./component/New";
+import New from "./components/New";
 import Signup from "./pages/Signup";
 import Login from "./pages/login";
-import ProtectedRoute from "./component/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import CategoryPage from "./pages/Categorypage";
 import MyPurchases from "./pages/MyPurchased";
 function App() {

@@ -52,9 +52,9 @@ function Signup() {
     <div className="flex justify-center items-center min-h-screen ">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md flex flex-col gap-4"
+        className="bg-[#2d2d5a] shadow-lg rounded-lg p-8 w-full max-w-md flex flex-col gap-4"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
+        <h2 className="text-2xl font-bold text-center text-white">
           Sign Up
         </h2>
 
@@ -66,7 +66,7 @@ function Signup() {
         )}
 
         <div className="flex flex-col">
-          <label htmlFor="email" className="text-sm font-medium text-gray-600">
+          <label htmlFor="email" className="text-sm font-medium text-white">
             Email
           </label>
           <input
@@ -83,7 +83,7 @@ function Signup() {
         <div className="flex flex-col">
           <label
             htmlFor="username"
-            className="text-sm font-medium text-gray-600"
+            className="text-sm font-medium text-white"
           >
             Username
           </label>
@@ -101,7 +101,7 @@ function Signup() {
         <div className="flex flex-col">
           <label
             htmlFor="password"
-            className="text-sm font-medium text-gray-600"
+            className="text-sm font-medium text-white"
           >
             Password
           </label>

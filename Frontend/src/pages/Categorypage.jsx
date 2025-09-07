@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Card from "../component/Card";
-import Navbar from "../component/Navbar";
+import Card from "../components/Card";
+import Navbar from "../components/Navbar";
 export default function CategoryPage() {
   const { category } = useParams();
   const [prompts, setPrompts] = useState([]);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Await, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import Navbar from "../components/Navbar";
 function Pagedetails() {
   const { user } = useAuth();
   const { id } = useParams();
@@ -82,7 +82,10 @@ function Pagedetails() {
   if (!data) return <h1>No Data Found</h1>;
 
   return (
-    <div className="max-w-2xl  p-6  rounded-2xl shadow-md">
+     <div className="p-4">
+       <Navbar  />
+    <div className="max-w-2xl  rounded-2xl shadow-md">
+      
       <img
         src={data.images}
         alt={data.platform}
@@ -140,6 +143,7 @@ function Pagedetails() {
           {message.text}
         </p>
       )}
+    </div>
     </div>
   );
 }

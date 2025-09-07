@@ -8,6 +8,10 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
+  score:{
+    type:Number, default: 0
+  }
+  
 });
 userSchema.plugin(passportLocalMongoose); //automatically implement hashing username password
 module.exports = mongoose.model("User", userSchema);
