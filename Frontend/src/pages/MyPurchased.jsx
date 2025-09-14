@@ -112,10 +112,10 @@ function MyPurchases() {
                 className="p-4 border rounded-lg shadow-sm bg-white"
               >
                 <h3 className="text-xl font-semibold mb-2">
-                  {purchase.promptId.platform}
+                  Platform:  {purchase.promptId.platform}
                 </h3>
                 <p className="text-gray-700 mb-2">
-                  {purchase.promptId.description}
+                  Description: {purchase.promptId.description}
                 </p>
                 <p className="text-gray-500 text-sm">
                   Bought on:{" "}

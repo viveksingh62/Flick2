@@ -6,6 +6,7 @@ import PromptSlider from "@/components/promptslider";
 import Leaderboard from "@/components/Leaderboard";
 import Section from "@/components/Section";
 import Card2 from "@/components/Card2";
+import LandingHeadline from "@/components/Landingheadline";
 export default function Homepage() {
   let [data, setdata] = useState([]);
   const [visible, setvisible] = useState([]);
@@ -39,10 +40,7 @@ export default function Homepage() {
 
       <div className="mt-6">
         {/* Headline */}
-        <h1 className="text-white text-base sm:text-lg leading-relaxed mb-6">
-          Discover the power of AI with ready-to-use prompts. Create, customize,
-          and share prompts to unlock smarter solutions and boost creativity
-        </h1>
+       <LandingHeadline/>
         <div className="my-8 ">
           <PromptSlider />
         </div>

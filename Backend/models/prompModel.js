@@ -11,6 +11,11 @@ const promptSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+    review:[{
+    type:Schema.Types.ObjectId,
+    ref:"Review"
+  }
+  ],
 });
 
 promptSchema.index(
@@ -25,4 +30,13 @@ promptSchema.index(
     },
   },
 );
+
+promptSchema.pre("remove", async function (next) {
+  try {
+    await this.model("Review").deleteMany({ _id: { $in: this.review } });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 module.exports = mongoose.model("Prompt", promptSchema);

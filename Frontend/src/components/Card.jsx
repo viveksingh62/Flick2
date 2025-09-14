@@ -10,7 +10,7 @@ function Card({ data }) {
   return (
     <Link
       to={`/prompt/${data._id}`} // 👈 redirects to details page with ID
-      className=" bg-[#2d2d5a] w-full  rounded-xl border-emerald-200 shadow-md p-3 flex flex-col hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+      className=" bg-[#2d2d5a] w-full  rounded-xl border-emerald-200 shadow-md p-3 flex flex-col hover:shadow-lg transition-shadow duration-200 cursor-pointer "
     >
       {/* Image */}
       <div className="overflow-hidden rounded-lg mb-3">
@@ -25,13 +25,13 @@ function Card({ data }) {
       <div className="flex flex-col flex-grow">
         {/* Platform name (optional) */}
         {data.platform && (
-          <h2 className="text-sm font-semibold text-[#f7fafc] mb-1">
+          <h2 className="text-sm font-semibold text-white mb-1">
             {data.platform}
           </h2>
         )}
 
         {/* Description */}
-        <p className="text-[#cbd5e0] text-sm mb-2 font-medium">{shortDesc}</p>
+        <p className="text-white text-sm mb-2 font-medium">{shortDesc}</p>
 
         {/* Price at bottom */}
         <div className="mt-auto">

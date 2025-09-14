@@ -12,6 +12,8 @@ const userRouter = require("./routes/user.js");
 const buyRouter = require("./routes/Buy.js");
 const leaderboardRouter = require("./routes/leaderboard");
 const sellerRouter = require("./routes/Seller.js");
+const review = require("./models/Review.js");
+const Review = require("./models/Review.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -22,7 +24,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  }),
+  })
 );
 //session
 app.use(
@@ -35,7 +37,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  }),
+  })
 );
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
@@ -168,8 +170,79 @@ app.delete("/prompt/:id", isLoggedIn, async (req, res) => {
         .status(403)
         .json({ message: "Not authorized to delete this prompt" });
     }
+    await Review.deleteMany({ _id: { $in: prompt.review } });
     await prompt.deleteOne();
     res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//reviews
+
+app.post("/prompt/:id/review", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "you must logged in to add reviews" });
+    }
+
+    const prompt = await Prompt.findById(req.params.id).populate("owner");
+    const { comment, rating } = req.body;
+    const newReview = new Review({ comment, rating, author: req.user._id });
+
+    await newReview.save();
+     await newReview.populate("author", "username");
+    prompt.review.push(newReview);
+    await prompt.save();
+    res.json({ message: "Review added successfully", review: newReview });
+    console.log("new review saved");
+  } catch (err) {}
+});
+app.get("/prompt/:id/reviews", async (req, res) => {
+  try {
+    const prompt = await Prompt.findById(req.params.id)
+      .populate({ path: "review", populate: { path: "author" } });
+
+    res.json(prompt.review);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//delete review 
+
+app.delete("/prompt/:promptId/review/:reviewId", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "You must be logged in to delete reviews" });
+    }
+
+    const { promptId, reviewId } = req.params;
+
+    // Find the review
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    // Check if user is the author
+    if (!review.author.equals(req.user._id)) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this review" });
+    }
+
+    // Delete the review from Review collection
+    await Review.findByIdAndDelete(reviewId);
+
+    // Remove review reference from the prompt
+    await Prompt.findByIdAndUpdate(promptId, { $pull: { review: reviewId } });
+
+    res.json({ message: "Review deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Navbar from "@/components/Navbar";
 function Login() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
@@ -57,7 +58,11 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen ">
+<div>
+<Navbar/>
+
+    <div className="flex justify-center h-24px ">
+       
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md flex flex-col gap-4"
@@ -84,7 +89,7 @@ function Login() {
             id="username"
             onChange={handleChange}
             value={formdata.username}
-            className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
         </div>
 
@@ -102,7 +107,7 @@ function Login() {
             id="password"
             onChange={handleChange}
             value={formdata.password}
-            className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
         </div>
 
@@ -114,7 +119,9 @@ function Login() {
         </button>
       </form>
     </div>
+    </div>
   );
+  
 }
 
 export default Login;
