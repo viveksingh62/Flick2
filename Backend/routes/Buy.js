@@ -10,6 +10,7 @@ router.post("/buy/:id", async (req, res) => {
     if (!req.user) {
       return res.status(401).json({ message: "Please log in to buy prompts." });
     }
+    const buyer = req.user;
 
     const { id } = req.params;
     const prompt = await Prompt.findById(id).populate("owner");
@@ -33,7 +34,7 @@ router.post("/buy/:id", async (req, res) => {
     });
     await data.save();
     console.log(prompt.owner);
-  
+
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -48,18 +49,35 @@ router.post("/buy/:id", async (req, res) => {
       text: prompt.description,
     });
     res.status(200).json({ message: "Prompt sent to your email!" });
-      let rank = await User.findByIdAndUpdate(
+    let rank = await User.findByIdAndUpdate(
       prompt.owner,
       { $inc: { score: 10 } },
-      { new: true }
+      { new: true },
     );
-    console.log(rank)
-    console.log("Buyer email:", req.user.email);
-console.log("Prompt owner:", prompt);
 
-const seller = await User.findById(prompt.owner);
-console.log("Seller fetched from DB:", seller);
+    //income
+    if (buyer.money < prompt.price) {
+      return res.status(400).json({ message: "Not enough balance" });
+    }
+    //total money
+    await User.findByIdAndUpdate(prompt.owner, {
+      $inc: { money: prompt.price },
+    });
+    //earned money
+    await User.findByIdAndUpdate(prompt.owner, {
+      $inc: { earned: prompt.price },
+    });
 
+    await User.findByIdAndUpdate(
+      buyer._id,
+      { $inc: { money: -prompt.price } },
+      { new: true },
+    );
+    await User.findByIdAndUpdate(
+      buyer._id,
+      { $inc: { spent: prompt.price } },
+      { new: true },
+    );
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong" });
@@ -71,10 +89,17 @@ router.get("/my-purchases", async (req, res) => {
     if (!req.user) {
       res.status(401).json({ message: "You must logged in" });
     }
-    const purchases = await Purchase.find({ email: req.user.email }).populate(
-      "promptId"
+
+    const user = await User.findById(req.user._id).select(
+      "username email score spent earned money",
     );
-    res.json(purchases);
+    const purchases = await Purchase.find({ email: req.user.email }).populate(
+      "promptId",
+    );
+    res.json({
+      user,
+      purchases,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).message({ message: "Something went wrong" });

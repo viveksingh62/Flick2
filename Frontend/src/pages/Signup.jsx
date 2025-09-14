@@ -54,9 +54,7 @@ function Signup() {
         onSubmit={handleSubmit}
         className="bg-[#2d2d5a] shadow-lg rounded-lg p-8 w-full max-w-md flex flex-col gap-4"
       >
-        <h2 className="text-2xl font-bold text-center text-white">
-          Sign Up
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-white">Sign Up</h2>
 
         {/* Show error if exists */}
         {error && (
@@ -81,10 +79,7 @@ function Signup() {
         </div>
 
         <div className="flex flex-col">
-          <label
-            htmlFor="username"
-            className="text-sm font-medium text-white"
-          >
+          <label htmlFor="username" className="text-sm font-medium text-white">
             Username
           </label>
           <input
@@ -99,10 +94,7 @@ function Signup() {
         </div>
 
         <div className="flex flex-col">
-          <label
-            htmlFor="password"
-            className="text-sm font-medium text-white"
-          >
+          <label htmlFor="password" className="text-sm font-medium text-white">
             Password
           </label>
           <input

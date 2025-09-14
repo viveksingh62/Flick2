@@ -38,8 +38,9 @@ function Pagedetails() {
             },
           );
           if (purchaseres.ok) {
-            const purchases = await purchaseres.json();
-            const hasBought = purchases.some(
+            const data = await purchaseres.json();
+            const purchasesArray = data.purchases || [];
+            const hasBought = purchasesArray.some(
               (p) => String(p.promptId?._id) == String(json._id),
             );
             setAlreadyBought(hasBought);
@@ -82,68 +83,70 @@ function Pagedetails() {
   if (!data) return <h1>No Data Found</h1>;
 
   return (
-     <div className="p-4">
-       <Navbar  />
-    <div className="max-w-2xl  rounded-2xl shadow-md">
-      
-      <img
-        src={data.images}
-        alt={data.platform}
-        className="w-full h-64 object-cover rounded-lg mb-4"
-      />
+    <div className="p-4">
+      <Navbar />
+      <div className="max-w-2xl  rounded-2xl shadow-md">
+        <img
+          src={data.images}
+          alt={data.platform}
+          className="w-full h-64 object-cover rounded-lg mb-4"
+        />
 
-      <h2 className="text-2xl font-bold mb-2">{data.platform}</h2>
-      <p className="text-gray-600 mb-2">Owner: {data.owner?.username}</p>
-      <p className="text-gray-800 mb-4">{data.description}</p>
-      <p className="text-lg font-semibold mb-6">{data.price} ₹</p>
+        <h2 className="text-2xl font-bold mb-2">{data.platform}</h2>
+        <p className="text-gray-600 mb-2">Owner: {data.owner?.username}</p>
+        <p className="text-gray-800 mb-4">{data.description}</p>
+        <p className="text-lg font-semibold mb-6">{data.price} ₹</p>
 
-      {user && data.owner && String(user.id) === String(data.owner._id) && (
-        <button
-          className="mb-4 w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
-          onClick={async () => {
-            try {
-              const res = await fetch(
-                `http://localhost:8080/prompt/${data._id}`,
-                {
-                  method: "DELETE",
-                  credentials: "include",
-                },
-              );
-              if (res.ok) {
-                navigate("/");
+        {user && data.owner && String(user.id) === String(data.owner._id) && (
+          <button
+            className="mb-4 w-full px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
+            onClick={async () => {
+              try {
+                const res = await fetch(
+                  `http://localhost:8080/prompt/${data._id}`,
+                  {
+                    method: "DELETE",
+                    credentials: "include",
+                  },
+                );
+                if (res.ok) {
+                  navigate("/");
+                }
+              } catch (err) {
+                console.error(err);
               }
-            } catch (err) {
-              console.error(err);
-            }
-          }}
-        >
-          Delete
-        </button>
-      )}
+            }}
+          >
+            Delete
+          </button>
+        )}
 
-      {alreadyBought ? (
-        <p className="w-full text-center py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg">
-          Already Bought
-        </p>
-      ) : (
-        <button
-          className="w-full px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-600 transition"
-          onClick={handleBuy}
-        >
-          Buy Prompt
-        </button>
-      )}
+        {user &&
+          data.owner &&
+          String(user.id) !== String(data.owner._id) &&
+          (alreadyBought ? (
+            <p className="w-full text-center py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg">
+              Already Bought
+            </p>
+          ) : (
+            <button
+              className="w-full px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-600 transition"
+              onClick={handleBuy}
+            >
+              Buy Prompt
+            </button>
+          ))}
 
-      {message && (
-        <p
-          className={`mt-4 text-center font-medium ${
-            message.type === "success" ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message.text}
-        </p>
-      )}
-    </div>
+        {message && (
+          <p
+            className={`mt-4 text-center font-medium ${
+              message.type === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message.text}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

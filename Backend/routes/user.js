@@ -14,7 +14,9 @@ router.post("/signup", async (req, res) => {
     // Auto-login after signup
     req.logIn(user, (err) => {
       if (err) {
-        return res.status(500).json({ success: false, message: "Login failed" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Login failed" });
       }
       return res.json({
         success: true,
@@ -25,20 +27,27 @@ router.post("/signup", async (req, res) => {
   } catch (err) {
     // Handle duplicate email or validation errors
     if (err.name === "UserExistsError") {
-      return res.status(400).json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     }
     if (err.code === 11000) {
-      return res.status(400).json({ success: false, message: "Email already registered" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already registered" });
     }
     console.error(err);
-    return res.status(500).json({ success: false, message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 });
 
 // Login route
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    if (err) return res.status(500).json({ success: false, message: "Auth error" });
+    if (err)
+      return res.status(500).json({ success: false, message: "Auth error" });
 
     if (!user) {
       return res.status(401).json({
@@ -48,12 +57,23 @@ router.post("/login", (req, res, next) => {
     }
 
     req.logIn(user, (err) => {
-      if (err) return res.status(500).json({ success: false, message: "Login failed" });
+      if (err)
+        return res
+          .status(500)
+          .json({ success: false, message: "Login failed" });
 
       return res.json({
         success: true,
         message: "Login successful",
-        user: { id: user._id, username: user.username, email: user.email },
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          score: user.score,
+          money: user.money,
+          earned: user.earned,
+          spent: user.spent,
+        },
       });
     });
   })(req, res, next);
@@ -78,7 +98,8 @@ router.get("/check-auth", (req, res) => {
 // Logout
 router.post("/logout", (req, res, next) => {
   req.logout(function (err) {
-    if (err) return res.status(500).json({ success: false, message: "Logout failed" });
+    if (err)
+      return res.status(500).json({ success: false, message: "Logout failed" });
     res.clearCookie("connect.sid");
     return res.json({ success: true, message: "Logout successfully" });
   });

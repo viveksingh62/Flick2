@@ -40,26 +40,23 @@ export default function Homepage() {
       <div className="mt-6">
         {/* Headline */}
         <h1 className="text-white text-base sm:text-lg leading-relaxed mb-6">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Officiis
-          tempore hic, provident eveniet velit enim excepturi animi et
-          accusantium? Neque ab esse incidunt non atque nesciunt, unde id
-          sapiente commodi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit...
+          Discover the power of AI with ready-to-use prompts. Create, customize,
+          and share prompts to unlock smarter solutions and boost creativity
         </h1>
- <div className="my-8 ">
+        <div className="my-8 ">
           <PromptSlider />
         </div>
-        <h1 className="text-white text-xl mb-10 font-bold">Explore The Collections</h1>
+        <h1 className="text-white text-xl mb-10 font-bold">
+          Explore The Collections
+        </h1>
         {/* Card Grid */}
-        <div className="grid grid-cols-1 gap-6 justify-items-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-6 justify-items-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
           {data.slice(0, visible).map((item) => (
             <Card key={item._id} data={item} />
           ))}
         </div>
 
-{/* 🔥 Dark background Section block with 4 columns */}
-
-
+        {/* 🔥 Dark background Section block with 4 columns */}
 
         {visible < data.length && (
           <div className="flex justify-center">
@@ -72,16 +69,19 @@ export default function Homepage() {
           </div>
         )}
         <div className=" py- px-6 rounded-lg my-12">
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-    <Section title="Top Prompts" items={data.slice(0, 5)} />
-    <Section title="Most Buyed" items={data.slice(5, 10)} />
-    <Section title="Most Favorite" items={data.slice(10, 15)} />
-    <Section title="New Collection" items={data.slice(15, 20)} />
-  </div>
-</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+            <Section title="Top Prompts" items={data.slice(0, 5)} />
+            <Section title="Most Buyed" items={data.slice(5, 10)} />
+            <Section title="Most Favorite" items={data.slice(10, 15)} />
+            <Section title="New Collection" items={data.slice(15, 20)} />
+          </div>
+        </div>
 
         {/* Circular Gallery */}
-        <div className="my-10" style={{ height: "500px", position: "relative" }}>
+        <div
+          className="my-10"
+          style={{ height: "500px", position: "relative" }}
+        >
           <CircularGallery
             bend={3}
             textColor="#ffffff"
@@ -91,9 +91,9 @@ export default function Homepage() {
         </div>
 
         {/* Prompt Slider */}
-       <div>
-        <Leaderboard/>
-       </div>
+        <div>
+          <Leaderboard />
+        </div>
       </div>
     </div>
   );

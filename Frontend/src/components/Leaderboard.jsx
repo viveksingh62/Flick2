@@ -15,9 +15,11 @@ function Leaderboard() {
   const colors = ["#3a3a76", "#2d2d5a", "#1f1f40"];
 
   return (
-    <div className="mx-auto my-5 p-4 rounded-xl shadow-lg
+    <div
+      className="mx-auto my-5 p-4 rounded-xl shadow-lg
                     bg-gradient-to-b from-[#3a3a76] via-[#2d2d5a] to-[#1f1f40]
-                    w-full max-w-md text-center">
+                    w-full max-w-md text-center"
+    >
       <h2 className="mb-4 text-lg sm:text-xl font-bold text-white">
         🏆 Top 3 Sellers
       </h2>

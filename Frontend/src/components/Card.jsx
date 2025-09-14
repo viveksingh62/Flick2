@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom"; // 👈 import Link
 
 function Card({ data }) {
+  if (!data) return null;
   const shortDesc = data.description
     ? data.description.split(" ").slice(0, 6).join(" ") + "..."
     : "";
@@ -34,9 +35,7 @@ function Card({ data }) {
 
         {/* Price at bottom */}
         <div className="mt-auto">
-          <p className="text-md font-semibold text-[#fff]">
-            ₹{data.price}
-          </p>
+          <p className="text-md font-semibold text-[#fff]">₹{data.price}</p>
         </div>
       </div>
     </Link>

@@ -52,13 +52,15 @@ export default function PromptSlider() {
           1024: { slidesPerView: 4 },
         }}
       >
-    {prompts.slice(0, 20).map((prompt) => (
-     <SwiperSlide key={prompt._id} className="!h-auto !w-auto flex justify-center">
-  <div className="w-56 md:w-60 lg:w-64 h-auto">
-    <Card data={prompt} />
-  </div>
-</SwiperSlide>
-
+        {prompts.slice(0, 20).map((prompt) => (
+          <SwiperSlide
+            key={prompt._id}
+            className="!h-auto !w-auto flex justify-center"
+          >
+            <div className="w-56 md:w-60 lg:w-64 h-auto">
+              <Card data={prompt} />
+            </div>
+          </SwiperSlide>
         ))}
       </Swiper>
     </div>

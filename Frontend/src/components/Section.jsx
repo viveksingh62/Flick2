@@ -21,7 +21,7 @@ function Section({ title, items }) {
             View more →
           </button>
         )}
-      </div>    
+      </div>
 
       {/* Vertical list of cards */}
       <div className="space-y-4 ">

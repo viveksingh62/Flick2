@@ -9,7 +9,7 @@ function Card2({ data }) {
   return (
     <Link
       to={`/prompt/${data._id}`}
-      className="bg-[#1a1a2e] rounded-lg border border-gray-700 shadow-md p-2 flex flex-row hover:shadow-lg transition-shadow duration-200 cursor-pointer w-full max-w-md h-24"
+      className="bg-[#1a1a2e] rounded-lg border border-gray-700 shadow-md p-2 flex flex-row hover:shadow-lg transition-shadow duration-200 cursor-pointer w-full max-w-md h-20"
     >
       {/* Image on left */}
       <div className="w-20 h-full overflow-hidden rounded-md flex-shrink-0 mr-3">
@@ -27,9 +27,7 @@ function Card2({ data }) {
             {data.platform}
           </h2>
         )}
-        <p className="text-[#cbd5e0] text-[15px] truncate">
-          {shortDesc}
-        </p>
+        <p className="text-[#cbd5e0] text-[15px] truncate">{shortDesc}</p>
         <p className="text-xs font-semibold text-[#fff] mt-auto truncate">
           ₹{data.price}
         </p>
