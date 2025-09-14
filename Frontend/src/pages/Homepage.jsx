@@ -40,7 +40,7 @@ export default function Homepage() {
 
       <div className="mt-6">
         {/* Headline */}
-       <LandingHeadline/>
+        <LandingHeadline />
         <div className="my-8 ">
           <PromptSlider />
         </div>

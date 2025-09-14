@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  })
+  }),
 );
 //session
 app.use(
@@ -37,7 +37,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  })
+  }),
 );
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
@@ -193,7 +193,7 @@ app.post("/prompt/:id/review", async (req, res) => {
     const newReview = new Review({ comment, rating, author: req.user._id });
 
     await newReview.save();
-     await newReview.populate("author", "username");
+    await newReview.populate("author", "username");
     prompt.review.push(newReview);
     await prompt.save();
     res.json({ message: "Review added successfully", review: newReview });
@@ -202,8 +202,10 @@ app.post("/prompt/:id/review", async (req, res) => {
 });
 app.get("/prompt/:id/reviews", async (req, res) => {
   try {
-    const prompt = await Prompt.findById(req.params.id)
-      .populate({ path: "review", populate: { path: "author" } });
+    const prompt = await Prompt.findById(req.params.id).populate({
+      path: "review",
+      populate: { path: "author" },
+    });
 
     res.json(prompt.review);
   } catch (err) {
@@ -211,7 +213,7 @@ app.get("/prompt/:id/reviews", async (req, res) => {
   }
 });
 
-//delete review 
+//delete review
 
 app.delete("/prompt/:promptId/review/:reviewId", async (req, res) => {
   try {

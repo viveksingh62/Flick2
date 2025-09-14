@@ -34,7 +34,7 @@ function Pagedetails() {
 
         const reviewRes = await fetch(
           `http://localhost:8080/prompt/${id}/reviews`,
-          { credentials: "include" }
+          { credentials: "include" },
         );
         if (reviewRes.ok) {
           const reviewData = await reviewRes.json();
@@ -42,14 +42,17 @@ function Pagedetails() {
         }
 
         if (user) {
-          const purchaseres = await fetch("http://localhost:8080/my-purchases", {
-            credentials: "include",
-          });
+          const purchaseres = await fetch(
+            "http://localhost:8080/my-purchases",
+            {
+              credentials: "include",
+            },
+          );
           if (purchaseres.ok) {
             const data = await purchaseres.json();
             const purchasesArray = data.purchases || [];
             const hasBought = purchasesArray.some(
-              (p) => String(p.promptId?._id) === String(json._id)
+              (p) => String(p.promptId?._id) === String(json._id),
             );
             setAlreadyBought(hasBought);
           }
@@ -110,7 +113,7 @@ function Pagedetails() {
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
       if (!res.ok) throw new Error("Failed to delete review");
 
@@ -153,7 +156,7 @@ function Pagedetails() {
               try {
                 const res = await fetch(
                   `http://localhost:8080/prompt/${data._id}`,
-                  { method: "DELETE", credentials: "include" }
+                  { method: "DELETE", credentials: "include" },
                 );
                 if (res.ok) navigate("/");
               } catch (err) {

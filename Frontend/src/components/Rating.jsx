@@ -5,7 +5,7 @@ export default function ReviewForm() {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-const { id } = useParams();
+  const { id } = useParams();
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!comment || rating === 0) return;
@@ -15,8 +15,8 @@ const { id } = useParams();
       const res = await fetch(`http://localhost:8080/prompt/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating: rating, comment:comment }),
-          credentials: "include",
+        body: JSON.stringify({ rating: rating, comment: comment }),
+        credentials: "include",
       });
       const data = await res.json();
       console.log("Review submitted:", data);
@@ -38,19 +38,18 @@ const { id } = useParams();
 
       <div className="flex items-center gap-2">
         <span className="text-white font-medium">Rating:</span>
-      <Rating
-  name="user-rating"
-  value={rating}
-  onChange={(e, newValue) => setRating(newValue)}
-  sx={{
-    color: "#fff", // color of filled stars
-    "& .MuiRating-iconEmpty": {
-      color: "transparent", // makes empty fill transparent
-      WebkitTextStroke: "1px white", // white border
-    },
-  }}
-/>
-
+        <Rating
+          name="user-rating"
+          value={rating}
+          onChange={(e, newValue) => setRating(newValue)}
+          sx={{
+            color: "#fff", // color of filled stars
+            "& .MuiRating-iconEmpty": {
+              color: "transparent", // makes empty fill transparent
+              WebkitTextStroke: "1px white", // white border
+            },
+          }}
+        />
       </div>
 
       <textarea

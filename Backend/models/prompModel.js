@@ -11,10 +11,11 @@ const promptSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-    review:[{
-    type:Schema.Types.ObjectId,
-    ref:"Review"
-  }
+  review: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Review",
+    },
   ],
 });
 
