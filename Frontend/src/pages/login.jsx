@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "@/components/Navbar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
 function Login() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
@@ -12,7 +16,7 @@ function Login() {
     username: "",
     password: "",
   });
-  const [error, setError] = useState(""); // flash error message
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormdata((currdata) => ({
@@ -23,7 +27,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // clear old error
+    setError("");
     try {
       const res = await fetch("http://localhost:8080/login", {
         method: "POST",
@@ -34,23 +38,15 @@ function Login() {
 
       const data = await res.json();
       if (data.success) {
-        // ✅ immediately update context so no refresh needed
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate(from, { replace: true }); // go back to original path
+        navigate(from, { replace: true });
       } else {
-        alert("Login failed");
-      }
-      if (!res.ok || !data.success) {
-        // backend should send { success: false, message: "Invalid credentials" }
         setError(data.message || "Invalid username or password");
         return;
       }
 
-      // success
       setFormdata({ username: "", password: "" });
-
-      console.log("Login success:", data);
     } catch (err) {
       console.error("Error:", err);
       setError("Something went wrong. Please try again later.");
@@ -58,64 +54,58 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className=" bg-[#1a1a2e] flex flex-col">
       <Navbar />
 
-      <div className="flex justify-center h-24px ">
+      <div className="flex flex-1 h-15px justify-center">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md flex flex-col gap-4"
+          className="w-full max-w-md p-6 bg-[#16213e] rounded-2xl shadow-lg space-y-5"
         >
-          <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
+          <h2 className="text-2xl font-bold text-center mb-4 text-white">
             Login
           </h2>
 
           {error && (
-            <p className="text-red-500 text-center font-medium">{error}</p>
+            <p className="text-red-400 text-center font-medium">{error}</p>
           )}
 
-          <div className="flex flex-col">
-            <label
-              htmlFor="username"
-              className="text-sm font-medium text-gray-600"
-            >
+          <div className="grid gap-2">
+            <Label htmlFor="username" className="text-white">
               Username
-            </label>
-            <input
+            </Label>
+            <Input
               type="text"
-              placeholder="Enter your username"
-              name="username"
               id="username"
-              onChange={handleChange}
+              name="username"
+              placeholder="Enter your username"
               value={formdata.username}
-              className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-gray-600"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              name="password"
-              id="password"
               onChange={handleChange}
-              value={formdata.password}
-              className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
+              className="bg-[#0f3460] text-white placeholder-gray-400"
             />
           </div>
 
-          <button
+          <div className="grid gap-2">
+            <Label htmlFor="password" className="text-white">
+              Password
+            </Label>
+            <Input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formdata.password}
+              onChange={handleChange}
+              className="bg-[#0f3460] text-white placeholder-gray-400"
+            />
+          </div>
+
+          <Button
             type="submit"
-            className="mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+            className="w-full mt-4 bg-[#e94560] hover:bg-[#d63447] text-white"
           >
             Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>

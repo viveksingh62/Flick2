@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const promptSchema = new Schema({
   platform: { type: String },
   description: { type: String, required: true },
-
+  secret: { type: String, required: true },
   price: { type: Number },
   images: { type: String },
   owner: {

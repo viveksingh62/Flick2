@@ -45,8 +45,8 @@ router.post("/buy/:id", async (req, res) => {
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: email,
-      subject: `Your Prompt: ${prompt.platform}`,
-      text: prompt.description,
+      subject: `Thanks for visiting PromptFlick : ${prompt.platform}`,
+      text: prompt.secret,
     });
     res.status(200).json({ message: "Prompt sent to your email!" });
     let rank = await User.findByIdAndUpdate(

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const app = express();
 const Prompt = require("./models/prompModel");
 const cors = require("cors");
-
+const multer = require("multer");
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -14,6 +14,8 @@ const leaderboardRouter = require("./routes/leaderboard");
 const sellerRouter = require("./routes/Seller.js");
 const review = require("./models/Review.js");
 const Review = require("./models/Review.js");
+const cloudinary = require("./cloudinary");
+// const uploadRoutes = require("./routes/upload");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -63,6 +65,7 @@ app.use("/", userRouter);
 app.use("/", buyRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/", sellerRouter);
+// app.use("/upload", uploadRoutes);
 // app.get("/test",(req,res)=>{
 
 //   req.session.name="vivek"
@@ -132,25 +135,38 @@ app.get("/prompt/:id", async (req, res) => {
 });
 
 //add route
-app.post("/prompt", isLoggedIn, async (req, res) => {
+const upload = multer({ dest: "uploads/" });
+app.post("/prompt", isLoggedIn, upload.single("images"), async (req, res) => {
   try {
-    // console.log("Received body:", req.body); // ✅ debug
+    const { platform, description, price } = req.body;
+    let imageUrl = "";
 
-    let { platform, description, price, images } = req.body;
+    //  If file exists, upload to Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "prompts", // optional Cloudinary folder
+      });
+      imageUrl = result.secure_url; // Cloudinary hosted URL
+    }
+
     const newDat = new Prompt({
       platform,
       description,
       price,
-      images,
+      images: imageUrl, // store Cloudinary URL
       owner: req.user._id,
     });
 
-    let newData = await newDat.save();
+    const newData = await newDat.save();
 
-    console.log("file", newData);
-    res.json({ message: "Data saved successfully", user: newData });
+    res.json({
+      success: true,
+      message: "Data saved successfully",
+      prompt: newData,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error saving prompt:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -247,5 +263,19 @@ app.delete("/prompt/:promptId/review/:reviewId", async (req, res) => {
     res.json({ message: "Review deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+//list card below reviews
+// Get all prompts by platform
+app.get("/prompts/:platform", async (req, res) => {
+  try {
+    const { platform } = req.params;
+    const prompts = await Prompt.find({ platform }).populate(
+      "owner",
+      "username",
+    );
+    res.json({ success: true, prompts });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });

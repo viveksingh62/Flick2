@@ -7,6 +7,7 @@ import Leaderboard from "@/components/Leaderboard";
 import Section from "@/components/Section";
 import Card2 from "@/components/Card2";
 import LandingHeadline from "@/components/Landingheadline";
+import Footer from "@/components/Footbar";
 export default function Homepage() {
   let [data, setdata] = useState([]);
   const [visible, setvisible] = useState([]);
@@ -93,6 +94,7 @@ export default function Homepage() {
           <Leaderboard />
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
