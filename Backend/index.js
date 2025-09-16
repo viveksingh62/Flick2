@@ -11,11 +11,11 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/User.js");
 const userRouter = require("./routes/user.js");
 const buyRouter = require("./routes/Buy.js");
-const leaderboardRouter = require("./routes/leaderboard");
+const leaderboardRouter = require("./routes/leaderboard.js");
 const sellerRouter = require("./routes/Seller.js");
 const review = require("./models/Review.js");
 const Review = require("./models/Review.js");
-const cloudinary = require("./cloudinary");
+const cloudinary = require("./cloudinary.js");
 
 // const uploadRoutes = require("./routes/upload");
 app.use(express.urlencoded({ extended: true }));
