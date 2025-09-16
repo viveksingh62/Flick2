@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
+import { Link } from "react-router-dom";
 function Login() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
@@ -102,12 +102,20 @@ function Login() {
 
           <Button
             type="submit"
-            className="w-full mt-4 bg-[#e94560] hover:bg-[#d63447] text-white"
+            className="w-full mt-4 bg-blue-500 hover:bg-blue-600 transition cursor-pointer"
           >
             Login
           </Button>
+          <Link
+                to="/signup"
+                className="px-4 py-1 text-white  font-medium rounded-lg hover:bg-white/10 transition "
+              >
+               New user?
+              </Link>
         </form>
+    
       </div>
+
     </div>
   );
 }

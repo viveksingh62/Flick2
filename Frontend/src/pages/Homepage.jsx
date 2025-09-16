@@ -8,6 +8,8 @@ import Section from "@/components/Section";
 import Card2 from "@/components/Card2";
 import LandingHeadline from "@/components/Landingheadline";
 import Footer from "@/components/Footbar";
+  import React from 'react';
+
 export default function Homepage() {
   let [data, setdata] = useState([]);
   const [visible, setvisible] = useState([]);
@@ -34,6 +36,10 @@ export default function Homepage() {
   const handleLoad = () => {
     setvisible((prev) => prev + 5);
   };
+
+
+
+
 
   return (
     <div className="p-4">
@@ -93,6 +99,7 @@ export default function Homepage() {
         <div>
           <Leaderboard />
         </div>
+       
       </div>
       <Footer />
     </div>

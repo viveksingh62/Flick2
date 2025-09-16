@@ -1,8 +1,12 @@
 {
+  "engines": {
+    "node": "20.19.3"
+  },  
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,6 +27,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "gsap": "^3.13.0",
     "lucide-react": "^0.539.0",
     "motion": "^12.23.12",
     "ogl": "^1.0.11",
@@ -34,7 +39,7 @@
     "react-select": "^5.10.2",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.12",
+    "tailwindcss": "^4.1.13",
     "three": "^0.180.0"
   },
   "devDependencies": {

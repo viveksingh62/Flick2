@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "@/components/Navbar";
+import { Link } from "react-router-dom";
 function Signup() {
   const navigate = useNavigate();
   const { setUser } = useAuth(); // update auth context
@@ -118,12 +119,19 @@ function Signup() {
 
           <button
             type="submit"
-            className="mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+            className="mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition cursor-pointer"
           >
             Submit
           </button>
+            <Link
+                to="/login"
+                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
+              >
+               Already registered?
+              </Link>
         </form>
       </div>
+     
     </div>
   );
 }

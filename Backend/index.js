@@ -5,6 +5,7 @@ const Prompt = require("./models/prompModel");
 const cors = require("cors");
 const multer = require("multer");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/User.js");
@@ -15,6 +16,7 @@ const sellerRouter = require("./routes/Seller.js");
 const review = require("./models/Review.js");
 const Review = require("./models/Review.js");
 const cloudinary = require("./cloudinary");
+
 // const uploadRoutes = require("./routes/upload");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,12 +28,34 @@ app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
     credentials: true, // allow cookies
-  }),
+  })
 );
+
+const dburl = process.env.ATLASDB_URL;
+const port = process.env.PORT || 8080;
+mongoose
+  .connect(dburl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000,
+  })
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
 //session
+const store = MongoStore.create({ mongoUrl: dburl,
+  crypto:{
+    secret:"keyboardcat"
+  },
+  touchAfter:24*3600
+ });
+ store.on("error",(err)=>{
+  console.log("Error in Mongo SESSION STORE",err)
+ })
 app.use(
   session({
-    secret: "keyboard cat",
+    store,
+    secret: "keyboardcat",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -39,7 +63,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     },
-  }),
+  })
 );
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
@@ -52,35 +76,21 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.get("/demouser", async (req, res) => {
-  let fakeuser = new User({
-    email: "demo123@gmail.com",
-    username: "viveksingh",
-  });
+// app.get("/demouser", async (req, res) => {
+//   let fakeuser = new User({
+//     email: "demo123@gmail.com",
+//     username: "viveksingh",
+//   });
 
-  let newUser = await User.register(fakeuser, "helloworld");
-  console.log(newUser);
-});
+//   let newUser = await User.register(fakeuser, "helloworld");
+//   console.log(newUser);
+// });
 app.use("/", userRouter);
 app.use("/", buyRouter);
 app.use("/leaderboard", leaderboardRouter);
 app.use("/", sellerRouter);
-// app.use("/upload", uploadRoutes);
-// app.get("/test",(req,res)=>{
 
-//   req.session.name="vivek"
-//   console.log(req.session)
-//     res.send("test succesfull")
-// })
-
-mongoose
-  .connect("mongodb://127.0.0.1:27017/Promptflicker")
-  .then(() => console.log("Connected!"))
-  .catch((err) => {
-    console.log(err);
-  });
-
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log(`port is listing on 8080`);
 });
 
@@ -138,7 +148,7 @@ app.get("/prompt/:id", async (req, res) => {
 const upload = multer({ dest: "uploads/" });
 app.post("/prompt", isLoggedIn, upload.single("images"), async (req, res) => {
   try {
-    const { platform, description, price } = req.body;
+    const { platform, description, price, secret } = req.body;
     let imageUrl = "";
 
     //  If file exists, upload to Cloudinary
@@ -153,6 +163,7 @@ app.post("/prompt", isLoggedIn, upload.single("images"), async (req, res) => {
       platform,
       description,
       price,
+      secret,
       images: imageUrl, // store Cloudinary URL
       owner: req.user._id,
     });
@@ -272,7 +283,7 @@ app.get("/prompts/:platform", async (req, res) => {
     const { platform } = req.params;
     const prompts = await Prompt.find({ platform }).populate(
       "owner",
-      "username",
+      "username"
     );
     res.json({ success: true, prompts });
   } catch (err) {

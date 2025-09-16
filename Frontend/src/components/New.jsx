@@ -7,34 +7,53 @@ import Navbar from "./Navbar";
 
 function New() {
   const navigate = useNavigate();
-  const [formdata, setformdata] = useState({
+
+  const [formdata, setFormdata] = useState({
     platform: "",
     description: "",
     price: "",
+    secret: "",
     images: null,
   });
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false); // loader state
 
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "images" && files[0]) {
-      setformdata((curr) => ({ ...curr, images: files[0] }));
+      setFormdata((curr) => ({ ...curr, images: files[0] }));
       setPreview(URL.createObjectURL(files[0]));
     } else {
-      setformdata((curr) => ({ ...curr, [name]: value }));
+      setFormdata((curr) => ({ ...curr, [name]: value }));
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation: ensure no field is empty
+    if (
+      !formdata.platform.trim() ||
+      !formdata.description.trim() ||
+      !formdata.price ||
+      !formdata.secret.trim() ||
+      !formdata.images
+    ) {
+      alert("All fields including image are required!");
+      return; // Stop submission
+    }
+
     setLoading(true);
 
     const formDataToSend = new FormData();
     formDataToSend.append("platform", formdata.platform);
     formDataToSend.append("description", formdata.description);
     formDataToSend.append("price", formdata.price);
-    if (formdata.images) formDataToSend.append("images", formdata.images);
+    formDataToSend.append("secret", formdata.secret);
+    formDataToSend.append("images", formdata.images);
 
     try {
       const res = await fetch("http://localhost:8080/prompt", {
@@ -42,18 +61,30 @@ function New() {
         body: formDataToSend,
         credentials: "include",
       });
+
       const data = await res.json();
       console.log("server response", data);
 
-      setformdata({ platform: "", description: "", price: "", images: null });
+      // Reset form
+      setFormdata({ platform: "", description: "", price: "", secret: "", images: null });
       setPreview(null);
+
       navigate("/");
     } catch (error) {
       console.log("Error:", error);
+      alert("Something went wrong while submitting!");
     } finally {
       setLoading(false);
     }
   };
+
+  // Form validation for disabling submit button
+  const isFormValid =
+    formdata.platform.trim() &&
+    formdata.description.trim() &&
+    formdata.price &&
+    formdata.secret.trim() &&
+    formdata.images;
 
   return (
     <div className="p-4 bg-[#1a1a2e] min-h-screen relative">
@@ -97,6 +128,7 @@ function New() {
             Add New Prompt
           </h1>
 
+          {/* Platform */}
           <div className="grid gap-2">
             <Label htmlFor="platform" className="text-white">
               Platform
@@ -112,6 +144,7 @@ function New() {
             />
           </div>
 
+          {/* Description */}
           <div className="grid gap-2">
             <Label htmlFor="description" className="text-white">
               Description
@@ -127,6 +160,23 @@ function New() {
             />
           </div>
 
+          {/* Prompt */}
+          <div className="grid gap-2">
+            <Label htmlFor="secret" className="text-white">
+              Prompt
+            </Label>
+            <Input
+              type="text"
+              id="secret"
+              name="secret"
+              placeholder="Enter the Prompt"
+              value={formdata.secret}
+              onChange={handleChange}
+              className="bg-[#0f3460] text-white placeholder-gray-400"
+            />
+          </div>
+
+          {/* Price */}
           <div className="grid gap-2">
             <Label htmlFor="price" className="text-white">
               Price
@@ -142,6 +192,7 @@ function New() {
             />
           </div>
 
+          {/* Image Upload */}
           <div className="grid gap-2">
             <Label htmlFor="images" className="text-white">
               Upload Image
@@ -170,10 +221,11 @@ function New() {
             </label>
           </div>
 
+          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={loading}
+            disabled={!isFormValid || loading}
           >
             Submit
           </Button>
