@@ -87,7 +87,7 @@ passport.deserializeUser(User.deserializeUser());
 // });
 app.use("/", userRouter);
 app.use("/", buyRouter);
-app.use("/leaderboard", leaderboardRouter);
+app.use("/", leaderboardRouter);
 app.use("/", sellerRouter);
 
 app.listen(port, () => {
