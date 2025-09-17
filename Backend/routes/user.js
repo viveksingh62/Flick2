@@ -45,11 +45,15 @@ router.post("/signup", async (req, res) => {
 
 // Login route
 router.post("/login", (req, res, next) => {
+  console.log("Login attempt for:", req.body.username);
   passport.authenticate("local", (err, user, info) => {
-    if (err)
+    if (err) {
+      console.error("Auth error:", err);
       return res.status(500).json({ success: false, message: "Auth error" });
+    }
 
     if (!user) {
+      console.log("Login failed:", info?.message);
       return res.status(401).json({
         success: false,
         message: info?.message || "Invalid username or password",
@@ -57,11 +61,14 @@ router.post("/login", (req, res, next) => {
     }
 
     req.logIn(user, (err) => {
-      if (err)
+      if (err) {
+        console.error("Login error:", err);
         return res
           .status(500)
           .json({ success: false, message: "Login failed" });
+      }
 
+      console.log("Login successful for:", user.username);
       return res.json({
         success: true,
         message: "Login successful",
@@ -81,6 +88,7 @@ router.post("/login", (req, res, next) => {
 
 // Check authentication
 router.get("/check-auth", (req, res) => {
+  console.log("Auth check - isAuthenticated:", req.isAuthenticated(), "User:", req.user?.username);
   if (req.isAuthenticated()) {
     return res.json({
       authenticated: true,
@@ -98,8 +106,10 @@ router.get("/check-auth", (req, res) => {
 // Logout
 router.post("/logout", (req, res, next) => {
   req.logout(function (err) {
-    if (err)
+    if (err) {
+      console.error("Logout error:", err);
       return res.status(500).json({ success: false, message: "Logout failed" });
+    }
     res.clearCookie("connect.sid");
     return res.json({ success: true, message: "Logout successfully" });
   });

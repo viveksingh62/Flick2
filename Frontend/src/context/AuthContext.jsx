@@ -14,10 +14,15 @@ const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const API_URL = import.meta.env.VITE_BACKEND_URL;
+        console.log("Checking auth with API_URL:", API_URL);
         const res = await fetch(`${API_URL}/check-auth`, {
           credentials: "include", // include cookies
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
         const data = await res.json();
+        console.log("Auth check response:", data);
 
         if (data.authenticated) {
           setUser(data.user);
@@ -28,6 +33,7 @@ const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error(error);
+        console.error("Auth check failed:", error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -38,8 +44,12 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
        const API_URL = import.meta.env.VITE_BACKEND_URL;
+      console.log("Logging out with API_URL:", API_URL);
       const res = await fetch(`${API_URL}/logout`, {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: "include", // very important to clear session
       });
       const data = await res.json();
@@ -47,6 +57,8 @@ const AuthProvider = ({ children }) => {
       setUser(null); // clear user in frontend context
     } catch (error) {
       console.error("Logout failed:", error);
+    } finally {
+      localStorage.removeItem("user");
     }
   };
 
