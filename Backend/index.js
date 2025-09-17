@@ -24,12 +24,22 @@ app.use(express.json());
 app.set("trust proxy", 1); // trust first proxy
 require("dotenv").config();
 
-app.use(
-  cors({
-    origin: "*", // your frontend
-    credentials: true, // allow cookies
-  })
-);
+const allowedOrigins = [
+  "http://localhost:5173", // dev
+  "https://promptflick.onrender.com", // Vercel frontend
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
 
 const dburl = process.env.ATLASDB_URL;
 const port = process.env.PORT || 8080;
@@ -62,6 +72,8 @@ app.use(
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //7days after the cookie will delete
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
+       sameSite: "none",
+        secure: true  
     },
   })
 );
