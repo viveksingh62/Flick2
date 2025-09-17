@@ -26,18 +26,23 @@ require("dotenv").config();
 
 const allowedOrigins = [
   "http://localhost:5173", // dev
-  "https://promptflick.onrender.com", // Vercel frontend
+  "https://promptflick.onrender.com", // Your deployed frontend URL
+  "http://localhost:3000", // Additional local dev port
+  "https://your-frontend-domain.com", // Add your actual frontend domain when deployed
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("CORS blocked origin:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 
 
@@ -65,15 +70,15 @@ const store = MongoStore.create({ mongoUrl: dburl,
 app.use(
   session({
     store,
-    secret: "keyboardcat",
+    secret: process.env.SESSION_SECRET || "keyboardcat",
     resave: false,
     saveUninitialized: false,
     cookie: {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //7days after the cookie will delete
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-       sameSite: "none",
-            secure: process.env.NODE_ENV === "production"
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production"
     },
   })
 );
