@@ -73,7 +73,7 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
        sameSite: "none",
-        secure: true  
+            secure: process.env.NODE_ENV === "production"
     },
   })
 );
@@ -97,14 +97,15 @@ passport.deserializeUser(User.deserializeUser());
 //   let newUser = await User.register(fakeuser, "helloworld");
 //   console.log(newUser);
 // });
+app.listen(port, () => {
+  console.log(`port is listing on 8080`);
+});
 app.use("/", userRouter);
 app.use("/", buyRouter);
 app.use("/", leaderboardRouter);
 app.use("/", sellerRouter);
 
-app.listen(port, () => {
-  console.log(`port is listing on 8080`);
-});
+
 
 //home route
 app.get("/", async (req, res) => {
