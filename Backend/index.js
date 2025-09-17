@@ -30,19 +30,12 @@ const allowedOrigins = [
   
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("CORS blocked origin:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // 🔥 allow cookies to be sent
+  })
+);
 
 
 const dburl = process.env.ATLASDB_URL;
@@ -82,16 +75,17 @@ app.use(
     },
   })
 );
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) return next();
-  res.status(401).json({ message: "You must be logged in" });
-}
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ message: "You must be logged in" });
+}
 
 // app.get("/demouser", async (req, res) => {
 //   let fakeuser = new User({
@@ -110,6 +104,20 @@ app.use("/", buyRouter);
 app.use("/", leaderboardRouter);
 app.use("/", sellerRouter);
 
+app.get("/check-auth", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.json({
+      authenticated: true,
+      user: {
+        id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+      },
+    });
+  } else {
+    return res.json({ authenticated: false });
+  }
+});
 
 
 //home route
