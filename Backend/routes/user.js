@@ -88,7 +88,7 @@ router.post("/login", (req, res, next) => {
 
 // Check authentication
 router.get("/check-auth", (req, res) => {
-  console.log("Auth check - isAuthenticated:", req.isAuthenticated(), "User:", req.user?.username);
+  
   if (req.isAuthenticated()) {
     return res.json({
       authenticated: true,

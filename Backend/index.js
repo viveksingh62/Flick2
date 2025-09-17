@@ -25,8 +25,9 @@ app.set("trust proxy", 1); // trust first proxy
 require("dotenv").config();
 
 const allowedOrigins = [
-  "http://localhost:5173", // dev
-  "https://promptflick.onrender.com", // Vercel frontend
+  "http://localhost:5173",
+  "https://flick-ruddy.vercel.app"    ,
+  
 ];
 
 app.use(cors({
@@ -76,7 +77,8 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production"
+      // secure: process.env.NODE_ENV === "production"
+       secure: process.env.NODE_ENV === "production" ? true : false,
     },
   })
 );
