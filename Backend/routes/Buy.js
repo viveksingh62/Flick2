@@ -5,6 +5,10 @@ const Prompt = require("../models/prompModel.js");
 const nodemailer = require("nodemailer");
 const User = require("../models/User.js");
 
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ message: "You must be logged in" });
+}
 router.post("/buy/:id", async (req, res) => {
   try {
     if (!req.user) {
@@ -84,7 +88,7 @@ router.post("/buy/:id", async (req, res) => {
   }
 });
 
-router.get("/my-purchases", async (req, res) => {
+router.get("/my-purchases", isLoggedIn,async (req, res) => {
   try {
     if (!req.user) {
       res.status(401).json({ message: "You must logged in" });

@@ -2,7 +2,7 @@ const User = require("../models/User.js");
 const express = require("express");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/leaderboard", async (req, res) => {
   try {
     const topUsers = await User.find({})
       .sort({ score: -1 })

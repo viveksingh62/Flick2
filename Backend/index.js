@@ -25,8 +25,8 @@ app.set("trust proxy", 1); // trust first proxy
 require("dotenv").config();
 
 const allowedOrigins = [
-  "http://localhost:5173", // dev
-  "https://promptflick.onrender.com", // Vercel frontend
+  "http://localhost:5173" // dev
+  
 ];
 
 app.use(cors({
@@ -102,7 +102,7 @@ app.listen(port, () => {
 });
 app.use("/", userRouter);
 app.use("/", buyRouter);
-app.use("/leaderboard", leaderboardRouter);
+app.use("/", leaderboardRouter);
 app.use("/", sellerRouter);
 
 
