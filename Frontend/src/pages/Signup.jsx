@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "@/components/Navbar";
 import { Link } from "react-router-dom";
 function Signup() {
+   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const { setUser } = useAuth(); // update auth context
 
@@ -25,7 +26,7 @@ function Signup() {
     setError(""); // reset before new request
 
     try {
-      const res = await fetch("http://localhost:8080/signup", {
+      const res = await fetch(`${API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),

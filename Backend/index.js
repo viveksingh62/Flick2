@@ -102,7 +102,7 @@ app.listen(port, () => {
 });
 app.use("/", userRouter);
 app.use("/", buyRouter);
-app.use("/", leaderboardRouter);
+app.use("/leaderboard", leaderboardRouter);
 app.use("/", sellerRouter);
 
 

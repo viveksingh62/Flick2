@@ -20,14 +20,14 @@ function Pagedetails() {
   const [relatedPrompts, setRelatedPrompts] = useState([]);
 
   const navigate = useNavigate();
-
+ const API_URL = import.meta.env.VITE_BACKEND_URL;
   // Fetch prompt details + reviews
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:8080/prompt/${id}`, {
+        const res = await fetch(`${API_URL}/prompt/${id}`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch prompt details");
@@ -36,7 +36,7 @@ function Pagedetails() {
 
         // Reviews
         const reviewRes = await fetch(
-          `http://localhost:8080/prompt/${id}/reviews`,
+          `${API_URL}/prompt/${id}/reviews`,
           { credentials: "include" },
         );
         if (reviewRes.ok) {
@@ -47,7 +47,7 @@ function Pagedetails() {
         // Check if user bought the prompt
         if (user) {
           const purchaseres = await fetch(
-            "http://localhost:8080/my-purchases",
+            `${API_URL}/my-purchases`,
             {
               credentials: "include",
             },
@@ -78,7 +78,7 @@ function Pagedetails() {
       const fetchRelated = async () => {
         try {
           const res = await fetch(
-            `http://localhost:8080/prompts/${data.platform}`,
+            `${API_URL}/prompts/${data.platform}`,
           );
           const json = await res.json();
           if (json.success) {
@@ -95,7 +95,7 @@ function Pagedetails() {
   const handleBuy = async () => {
     setMessage(null);
     try {
-      const res = await fetch(`http://localhost:8080/buy/${data._id}`, {
+      const res = await fetch(`${API_URL}/buy/${data._id}`, {
         method: "POST",
         credentials: "include",
       });
@@ -112,7 +112,7 @@ function Pagedetails() {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:8080/prompt/${id}/review`, {
+      const res = await fetch(`${API_URL}/prompt/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -133,7 +133,7 @@ function Pagedetails() {
   const handleDeleteReview = async (reviewId) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/prompt/${data._id}/review/${reviewId}`,
+        `${API_URL}/prompt/${data._id}/review/${reviewId}`,
         { method: "DELETE", credentials: "include" },
       );
       if (!res.ok) throw new Error("Failed to delete review");

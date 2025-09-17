@@ -13,7 +13,8 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:8080/check-auth", {
+        const API_URL = import.meta.env.VITE_BACKEND_URL;
+        const res = await fetch(`${API_URL}/check-auth`, {
           credentials: "include", // include cookies
         });
         const data = await res.json();
@@ -36,7 +37,8 @@ const AuthProvider = ({ children }) => {
   }, []);
   const logout = async () => {
     try {
-      const res = await fetch("http://localhost:8080/logout", {
+       const API_URL = import.meta.env.VITE_BACKEND_URL;
+      const res = await fetch(`${API_URL}/logout`, {
         method: "POST",
         credentials: "include", // very important to clear session
       });

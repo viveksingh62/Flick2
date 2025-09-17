@@ -10,12 +10,13 @@ function MyPurchases() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [visible, setVisible] = useState(3);
-
+  const API_URL = import.meta.env.VITE_BACKEND_URL; 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch purchased prompts
-        const res = await fetch("http://localhost:8080/my-purchases", {
+        
+        const res = await fetch(`${API_URL}/my-purchases`, {
           credentials: "include",
         });
         if (!res.ok) {
@@ -27,7 +28,7 @@ function MyPurchases() {
         setUser(data.user);
 
         // Fetch uploaded prompts
-        const uploadRes = await fetch("http://localhost:8080/my-uploads", {
+        const uploadRes = await fetch(`${API_URL}/my-uploads`, {
           credentials: "include",
         });
         if (uploadRes.ok) {

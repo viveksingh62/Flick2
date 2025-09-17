@@ -25,33 +25,37 @@ function Login() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      const res = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formdata),
-        credentials: "include",
-      });
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-      const data = await res.json();
-      if (data.success) {
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate(from, { replace: true });
-      } else {
-        setError(data.message || "Invalid username or password");
-        return;
-      }
+  try {
+    const API_URL = import.meta.env.VITE_BACKEND_URL; 
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formdata),
+      credentials: "include", 
+    });
 
-      setFormdata({ username: "", password: "" });
-    } catch (err) {
-      console.error("Error:", err);
-      setError("Something went wrong. Please try again later.");
+    const data = await res.json();
+
+    if (data.success) {
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate(from, { replace: true });
+    } else {
+      setError(data.message || "Invalid username or password");
+      return;
     }
-  };
+
+    setFormdata({ username: "", password: "" });
+  } catch (err) {
+    console.error("Error:", err);
+    setError("Something went wrong. Please try again later.");
+  }
+};
+
 
   return (
     <div className=" bg-[#1a1a2e] flex flex-col">

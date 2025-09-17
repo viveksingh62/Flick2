@@ -9,7 +9,7 @@ import Card2 from "@/components/Card2";
 import LandingHeadline from "@/components/Landingheadline";
 import Footer from "@/components/Footbar";
   import React from 'react';
-
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 export default function Homepage() {
   let [data, setdata] = useState([]);
   const [visible, setvisible] = useState([]);
@@ -23,7 +23,7 @@ export default function Homepage() {
   };
 
   const fetchAllPrompts = async () => {
-    const res = await fetch("http://localhost:8080/");
+    const res = await fetch(`${API_URL}/`);
     const all = await res.json();
     setdata(all);
     setvisible(6);

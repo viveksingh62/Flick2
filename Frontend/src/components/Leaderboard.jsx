@@ -5,7 +5,8 @@ function Leaderboard() {
   const [topUsers, setTopUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/leaderboard")
+     const API_URL = import.meta.env.VITE_BACKEND_URL;
+    fetch(`${API_URL}/leaderboard`)
       .then((res) => res.json())
       .then((data) => setTopUsers(data.slice(0, 3))) // top 3 only
       .catch(console.error);

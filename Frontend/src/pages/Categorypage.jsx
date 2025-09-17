@@ -3,17 +3,21 @@ import { useParams } from "react-router-dom";
 import Card from "../components/Card";
 import Navbar from "../components/Navbar";
 export default function CategoryPage() {
+  
   const { category } = useParams();
   const [prompts, setPrompts] = useState([]);
 
-  useEffect(() => {
-    const fetchPrompts = async () => {
-      const res = await fetch(`http://localhost:8080/categories/${category}`);
-      const data = await res.json();
-      setPrompts(data);
-    };
-    fetchPrompts();
-  }, [category]);
+useEffect(() => {
+  const fetchPrompts = async () => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL; // from .env
+    const res = await fetch(`${API_URL}/categories/${category}`);
+    const data = await res.json();
+    setPrompts(data);
+  };
+
+  fetchPrompts();
+}, [category]);
+
 
   return (
     <div className="p-6">

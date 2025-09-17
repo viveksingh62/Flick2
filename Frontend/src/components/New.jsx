@@ -7,7 +7,7 @@ import Navbar from "./Navbar";
 
 function New() {
   const navigate = useNavigate();
-
+ const API_URL = import.meta.env.VITE_BACKEND_URL;
   const [formdata, setFormdata] = useState({
     platform: "",
     description: "",
@@ -56,7 +56,7 @@ function New() {
     formDataToSend.append("images", formdata.images);
 
     try {
-      const res = await fetch("http://localhost:8080/prompt", {
+      const res = await fetch(`${API_URL}/prompt`, {
         method: "POST",
         body: formDataToSend,
         credentials: "include",

@@ -11,13 +11,13 @@ import Card from "./Card";
 
 export default function PromptSlider() {
   const [prompts, setPrompts] = useState([]);
-
+ const API_URL = import.meta.env.VITE_BACKEND_URL;
   const colors = ["#3a3a76", "#2d2d5a", "#fff"]; // your colors
 
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const res = await fetch("http://localhost:8080/");
+        const res = await fetch(`${API_URL}/`);
         const data = await res.json();
         setPrompts(data);
       } catch (err) {

@@ -13,7 +13,8 @@ export default function SearchResults() {
 
     const fetchResults = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/search?q=${query}`);
+         const API_URL = import.meta.env.VITE_BACKEND_URL;
+        const res = await fetch(`${API_URL}/search?q=${query}`);
         const data = await res.json();
         setResults(data); // assuming data is an array of prompts
       } catch (err) {

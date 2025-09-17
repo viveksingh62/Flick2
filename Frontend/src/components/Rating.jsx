@@ -6,13 +6,14 @@ export default function ReviewForm() {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
+   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!comment || rating === 0) return;
     setLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:8080/prompt/${id}/review`, {
+      const res = await fetch(`${API_URL}/prompt/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating: rating, comment: comment }),
