@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const API_URL = import.meta.env.VITE_BACKEND_URL;
-        console.log("Checking auth with API_URL:", API_URL);
+      
         const res = await fetch(`${API_URL}/check-auth`, {
           credentials: "include", // include cookies
           headers: {
@@ -22,7 +22,7 @@ const AuthProvider = ({ children }) => {
           },
         });
         const data = await res.json();
-        console.log("Auth check response:", data);
+       
 
         if (data.authenticated) {
           setUser(data.user);

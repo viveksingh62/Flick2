@@ -18,7 +18,7 @@ function MyPurchases() {
          const API_URL = import.meta.env.VITE_BACKEND_URL; 
         const res = await fetch(`${API_URL}/my-purchases`, {
           credentials: "include",
-          method:"GET"
+         
         });
         if (!res.ok) {
           navigate("/login");
