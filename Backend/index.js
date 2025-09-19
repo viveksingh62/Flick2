@@ -30,10 +30,22 @@ const allowedOrigins = [
   
 ];
 
+// Update your CORS configuration
 app.use(
   cors({
-    origin: allowedOrigins,
-    credentials: true, // 🔥 allow cookies to be sent
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // allow cookies to be sent
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -62,16 +74,17 @@ const store = MongoStore.create({ mongoUrl: dburl,
 app.use(
   session({
     store,
+      
     secret: process.env.SESSION_SECRET || "keyboardcat",
     resave: false,
     saveUninitialized: false,
+     name: 'sessionId',
     cookie: {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //7days after the cookie will delete
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      // secure: process.env.NODE_ENV === "production"
-       secure: process.env.NODE_ENV === "production" ? true : false,
+  secure: process.env.NODE_ENV === "production",
     },
   })
 );

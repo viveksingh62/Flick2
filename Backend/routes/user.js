@@ -88,7 +88,8 @@ router.post("/login", (req, res, next) => {
 
 // Check authentication
 router.get("/check-auth", (req, res) => {
-  
+    console.log("Session exists:", !!req.session);
+  console.log("User authenticated:", req.isAuthenticated());
   if (req.isAuthenticated()) {
     return res.json({
       authenticated: true,
@@ -110,9 +111,14 @@ router.post("/logout", (req, res, next) => {
       console.error("Logout error:", err);
       return res.status(500).json({ success: false, message: "Logout failed" });
     }
-    res.clearCookie("connect.sid");
+    res.clearCookie('sessionId', {
+        path: '/',
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production" ? true : false,
+      });
     return res.json({ success: true, message: "Logout successfully" });
   });
-});
+}); 
 
 module.exports = router;

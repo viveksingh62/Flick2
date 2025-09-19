@@ -88,7 +88,7 @@ router.post("/buy/:id", async (req, res) => {
   }
 });
 
-router.get("/my-purchases", isLoggedIn,async (req, res) => {
+router.get("/my-purchases",async (req, res) => {
   try {
     if (!req.user) {
       res.status(401).json({ message: "You must logged in" });
