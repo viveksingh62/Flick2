@@ -1,29 +1,19 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import Select from "react-select";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
-   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const { user, logout } = useAuth();
-  const navigate = useNavigate(); // ✅ useNavigate for redirect
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // 🔎 Handle search redirect
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-    setQuery(""); // optional: clear input after search
-  };
-
-  // Category options
   const categoryOptions = [
     { value: "ChatGPT", label: "ChatGPT" },
     { value: "Gemini", label: "Gemini" },
@@ -33,34 +23,36 @@ export default function Navbar() {
     { value: "DALL·E", label: "DALL·E" },
   ];
 
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+    setQuery("");
+    setIsOpen(false); // Close sidebar on mobile
+  };
 
-  // Handle category change
   const handleCategoryChange = (selected) => {
     setSelectedCategory(selected);
-    if (selected) {
-      setTimeout(() => {
-        window.location.href = `/categories/${selected.value}`;
-      }, 200);
-    }
+    if (selected) navigate(`/categories/${selected.value}`);
+    setIsOpen(false); // Close sidebar on mobile
+  };
+
+  const handleNavClick = (path) => {
+    navigate(path);
+    setIsOpen(false);
   };
 
   return (
     <>
       {/* Navbar */}
       <nav className="bg-[#2a2a54] text-white px-6 py-3 shadow-md flex items-center justify-between rounded-lg mb-8">
-        {/* Left: Logo */}
         <div className="flex items-center space-x-2">
           <Link to="/">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-full h-13 cursor-pointer"
-            />
+            <img src="/logo.png" alt="Logo" className="w-full h-13 cursor-pointer" />
           </Link>
         </div>
 
-        {/* Search (Desktop only) */}
+        {/* Desktop Search */}
         <div className="hidden md:flex flex-1 max-w-md mx-6">
           <form onSubmit={handleSearch} className="relative w-1/2">
             <input
@@ -78,11 +70,7 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/prompt" className="px-4 py-1 rounded-lg hover:bg-white/10">
-            Create
-          </Link>
-
-          {/* Category Dropdown (Desktop) */}
+          <Link to="/prompt" className="px-4 py-1 rounded-lg hover:bg-white/10">Create</Link>
           <div className="hidden md:flex w-48 mx-4">
             <Select
               options={categoryOptions}
@@ -92,71 +80,31 @@ export default function Navbar() {
               isSearchable={false}
               menuPortalTarget={document.body}
               styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "0.5rem",
-                  backgroundColor: "#0A2540",
-                  borderColor: "rgba(255,255,255,0.2)",
-                  color: "white",
-                  padding: "2px 6px",
-                  minHeight: "38px",
-                }),
+                control: (base) => ({ ...base, borderRadius: "0.5rem", backgroundColor: "#0A2540", borderColor: "rgba(255,255,255,0.2)", padding: "2px 6px", minHeight: "38px" }),
                 singleValue: (base) => ({ ...base, color: "white" }),
-                placeholder: (base) => ({
-                  ...base,
-                  color: "rgba(255,255,255,0.6)",
-                }),
+                placeholder: (base) => ({ ...base, color: "rgba(255,255,255,0.6)" }),
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                menu: (base) => ({
-                  ...base,
-                  zIndex: 9999,
-                  backgroundColor: "#0A2540",
-                }),
+                menu: (base) => ({ ...base, zIndex: 9999, backgroundColor: "#0A2540" }),
                 option: (base, { isFocused, isSelected }) => ({
                   ...base,
-                  backgroundColor: isSelected
-                    ? "#10B981"
-                    : isFocused
-                      ? "rgba(16, 185, 129, 0.3)"
-                      : "transparent",
+                  backgroundColor: isSelected ? "#10B981" : isFocused ? "rgba(16, 185, 129, 0.3)" : "transparent",
                   color: "white",
                   cursor: "pointer",
                 }),
               }}
             />
           </div>
-
-          <Link to="/about" className="px-4 py-1 rounded-lg hover:bg-white/10">
-            About
-          </Link>
+          <Link to="/about" className="px-4 py-1 rounded-lg hover:bg-white/10">About</Link>
 
           {!user ? (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
-              >
-                Signup
-              </Link>
+              <Link to="/login" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Login</Link>
+              <Link to="/signup" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Signup</Link>
             </>
           ) : (
             <>
-              <button
-                onClick={logout}
-                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
-              >
-                Logout
-              </button>
-              <Link
-                to="/my-purchases"
-                className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition"
-              >
+              <button onClick={logout} className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Logout</button>
+              <Link to="/my-purchases" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">
                 Profile &nbsp; <FontAwesomeIcon icon={faUser} />
               </Link>
             </>
@@ -164,19 +112,17 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Hamburger */}
-        <button
-          className="md:hidden focus:outline-none"
-          onClick={() => setIsOpen(true)}
-        >
+        <button className="md:hidden focus:outline-none" onClick={() => setIsOpen(true)}>
           <Menu className="w-7 h-7" />
         </button>
       </nav>
 
-      {/* Sidebar for Mobile */}
-      <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 z-50 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+      {/* Mobile Sidebar */}
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: isOpen ? 0 : "100%" }}
+        transition={{ type: "spring", stiffness: 300 }}
+        className="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50"
       >
         <div className="flex justify-between items-center p-4 border-b">
           <span className="text-lg font-semibold text-emerald-600">Menu</span>
@@ -193,7 +139,7 @@ export default function Navbar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search..."
-              className="px-3 py-2 pr-10 rounded-lg border border-gray-300 w-full text-black"
+              className="px-3 py-2 pr-10 rounded-lg border border-gray-300 w-full text-white bg-[#0A2540]"
             />
             <button type="submit">
               <Search className="absolute right-3 top-2.5 text-gray-400 w-5 h-5" />
@@ -210,33 +156,14 @@ export default function Navbar() {
               isSearchable={false}
               menuPortalTarget={document.body}
               styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "0.5rem",
-                  backgroundColor: "#0A2540",
-                  borderColor: "rgba(255,255,255,0.2)",
-                  color: "white",
-                  padding: "2px 6px",
-                  minHeight: "38px",
-                }),
+                control: (base) => ({ ...base, borderRadius: "0.5rem", backgroundColor: "#0A2540", borderColor: "rgba(255,255,255,0.2)", padding: "2px 6px", minHeight: "38px" }),
                 singleValue: (base) => ({ ...base, color: "white" }),
-                placeholder: (base) => ({
-                  ...base,
-                  color: "rgba(255,255,255,0.6)",
-                }),
+                placeholder: (base) => ({ ...base, color: "rgba(255,255,255,0.6)" }),
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                menu: (base) => ({
-                  ...base,
-                  zIndex: 9999,
-                  backgroundColor: "#0A2540",
-                }),
+                menu: (base) => ({ ...base, zIndex: 9999, backgroundColor: "#0A2540" }),
                 option: (base, { isFocused, isSelected }) => ({
                   ...base,
-                  backgroundColor: isSelected
-                    ? "#10B981"
-                    : isFocused
-                      ? "rgba(16, 185, 129, 0.3)"
-                      : "transparent",
+                  backgroundColor: isSelected ? "#10B981" : isFocused ? "rgba(16, 185, 129, 0.3)" : "transparent",
                   color: "white",
                   cursor: "pointer",
                 }),
@@ -244,37 +171,14 @@ export default function Navbar() {
             />
           </div>
 
-          <Link
-            to="/prompt"
-            className="text-gray-700 hover:text-emerald-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Create
-          </Link>
-          <Link
-            to="/about"
-            className="text-gray-700 hover:text-emerald-600"
-            onClick={() => setIsOpen(false)}
-          >
-            About
-          </Link>
+          {/* Mobile Links */}
+          <button onClick={() => handleNavClick("/prompt")} className="text-gray-700 hover:text-emerald-600">Create</button>
+          <button onClick={() => handleNavClick("/about")} className="text-gray-700 hover:text-emerald-600">About</button>
 
           {!user ? (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
-                onClick={() => setIsOpen(false)}
-              >
-                Signup
-              </Link>
+              <button onClick={() => handleNavClick("/login")} className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Login</button>
+              <button onClick={() => handleNavClick("/signup")} className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Signup</button>
             </>
           ) : (
             <button
@@ -288,15 +192,10 @@ export default function Navbar() {
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Dark overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {/* Overlay */}
+      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-40 z-40" onClick={() => setIsOpen(false)} />}
     </>
   );
 }
