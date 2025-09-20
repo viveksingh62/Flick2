@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import Loader from "../components/Loader";
+import Loader from "../components/loader.jsx";
 
 function Pagedetails() {
   const { user } = useAuth();
