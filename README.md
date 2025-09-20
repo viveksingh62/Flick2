@@ -1,5 +1,9 @@
+🌟 Promptflick
+
 Promptflick is a MERN-based AI Prompt Marketplace where users can create, browse, and purchase prompts for platforms like ChatGPT, Gemini, MidJourney, Claude, and Stable Diffusion.
-Authentication is handled with Passport.js + Express-Session for secure session-based login.
+
+Authentication is powered by Passport.js + Express-Session for secure, session-based login.
+Deployed using Vercel (Frontend) and Render (Backend) with MongoDB Atlas as the database.
 
 Deployed using Vercel (frontend) and Render (backend).
 
@@ -71,18 +75,25 @@ Update your frontend .env for production:
 
 VITE_BACKEND_URL=https://promptflick.onrender.com
 
-![Homepage](./screenshots/Homepage.png)  
+## 📸 Screenshots  
 
-### Dashboard 
-![Marketplace](./screenshots/Dashboard.png)  
+### 🏠 Homepage & 📊 Dashboard  
+<p align="center">
+  <img src="./screenshots/Homepage.png" alt="Homepage" width="45%" />
+  <img src="./screenshots/Dashboard.png" alt="Dashboard" width="45%" />
+</p>
 
-### Search 
-![Profile](./screenshots/Search.png)  
+### 🔎 Search & ✍️ Create Prompt  
+<p align="center">
+  <img src="./screenshots/Search.png" alt="Search" width="45%" />
+  <img src="./screenshots/Create.png" alt="Create Prompt" width="45%" />
+</p>
 
- ###Create 
- ![Create](./screenshots/Create.png)
-### leaderboard
-![Leaderboard](./screenshots/Leaderboard.png)
+### 🏆 Leaderboard  
+<p align="center">
+  <img src="./screenshots/Leaderboard.png" alt="Leaderboard" width="45%" />
+</p>
+
 
 👨‍💻 Author
 
