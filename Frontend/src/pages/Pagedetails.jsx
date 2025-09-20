@@ -6,7 +6,7 @@ import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import Loader from "../components/Loader";
-  const API_URL = import.meta.env.VITE_BACKEND_URL;
+ 
 function Pagedetails() {
   
   const { user } = useAuth();
