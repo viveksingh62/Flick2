@@ -223,9 +223,7 @@ app.post("/prompt", isLoggedIn, upload.single("images"), async (req, res) => {
 //delete route
 app.delete("/prompt/:id", isLoggedIn, async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "you must be logged in" });
-    }
+   
     const prompt = await Prompt.findById(req.params.id);
 
     if (!prompt) {
