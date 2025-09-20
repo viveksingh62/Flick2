@@ -6,9 +6,8 @@ import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import Loader from "../components/Loader";
- 
+
 function Pagedetails() {
-  
   const { user } = useAuth();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,8 @@ function Pagedetails() {
   const [relatedPrompts, setRelatedPrompts] = useState([]);
 
   const navigate = useNavigate();
- const API_URL = import.meta.env.VITE_BACKEND_URL;
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Fetch prompt details + reviews
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +37,9 @@ function Pagedetails() {
         setData(json);
 
         // Reviews
-        const reviewRes = await fetch(
-          `${API_URL}/prompt/${id}/reviews`,
-          { credentials: "include" },
-        );
+        const reviewRes = await fetch(`${API_URL}/prompt/${id}/reviews`, {
+          credentials: "include",
+        });
         if (reviewRes.ok) {
           const reviewData = await reviewRes.json();
           setReviews(reviewData || []);
@@ -48,17 +47,14 @@ function Pagedetails() {
 
         // Check if user bought the prompt
         if (user) {
-          const purchaseres = await fetch(
-            `${API_URL}/my-purchases`,
-            {
-              credentials: "include",
-            },
-          );
+          const purchaseres = await fetch(`${API_URL}/my-purchases`, {
+            credentials: "include",
+          });
           if (purchaseres.ok) {
             const data = await purchaseres.json();
             const purchasesArray = data.purchases || [];
             const hasBought = purchasesArray.some(
-              (p) => String(p.promptId?._id) === String(json._id),
+              (p) => String(p.promptId?._id) === String(json._id)
             );
             setAlreadyBought(hasBought);
           }
@@ -79,9 +75,7 @@ function Pagedetails() {
     if (data && data.platform) {
       const fetchRelated = async () => {
         try {
-          const res = await fetch(
-            `${API_URL}/prompts/${data.platform}`,
-          );
+          const res = await fetch(`${API_URL}/prompts/${data.platform}`);
           const json = await res.json();
           if (json.success) {
             setRelatedPrompts(json.prompts.filter((p) => p._id !== data._id));
@@ -136,7 +130,7 @@ function Pagedetails() {
     try {
       const res = await fetch(
         `${API_URL}/prompt/${data._id}/review/${reviewId}`,
-        { method: "DELETE", credentials: "include" },
+        { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error("Failed to delete review");
 
@@ -148,7 +142,9 @@ function Pagedetails() {
 
   if (loading) return <Loader />;
   if (error)
-    return <h1 className="text-red-500 text-center mt-10">Error: {error}</h1>;
+    return (
+      <h1 className="text-red-500 text-center mt-10">Error: {error}</h1>
+    );
   if (!data) return <h1 className="text-center mt-10">No Data Found</h1>;
 
   const avgRating =
@@ -191,13 +187,13 @@ function Pagedetails() {
             <div className="space-y-3">
               {user && String(user.id) === String(data.owner?._id) && (
                 <button
-                  className="w-full px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow hover:from-red-600 hover:to-red-700 transition"
+                  className="w-full px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow hover:from-red-600 hover:to-red-700 transition cursor-pointer"
                   onClick={async () => {
                     try {
-                      const res = await fetch(
-                        `${API_URL}/prompt/${data._id}`,
-                        { method: "DELETE", credentials: "include" },
-                      );
+                      const res = await fetch(`${API_URL}/prompt/${data._id}`, {
+                        method: "DELETE",
+                        credentials: "include",
+                      });
                       if (res.ok) navigate("/");
                     } catch (err) {
                       console.error(err);
@@ -208,20 +204,24 @@ function Pagedetails() {
                 </button>
               )}
 
-              {user &&
-                String(user.id) !== String(data.owner?._id) &&
-                (alreadyBought ? (
-                  <p className="w-full text-center py-2 bg-[#0f3460] text-gray-300 font-semibold rounded-lg">
-                    Already Bought
-                  </p>
-                ) : (
-                  <button
-                    className="w-full px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-600 hover:to-green-700 transition cursor-pointer"
-                    onClick={handleBuy}
-                  >
-                    Buy Prompt
-                  </button>
-                ))}
+              {!user ? (
+                <p className="w-full text-center py-2 bg-[#0f3460] text-gray-300 font-semibold rounded-lg">
+                  Login to buy the prompt
+                </p>
+              ) : String(user.id) !== String(data.owner?._id) ? (
+                <button
+                  className={`w-full px-6 py-2 font-semibold rounded-lg shadow text-white transition 
+                    ${
+                      alreadyBought
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 cursor-pointer"
+                    }`}
+                  onClick={handleBuy}
+                  disabled={alreadyBought}
+                >
+                  {alreadyBought ? "Already Bought" : "Buy Prompt"}
+                </button>
+              ) : null}
 
               {message && (
                 <p
@@ -267,7 +267,7 @@ function Pagedetails() {
             />
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition"
+              className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer"
             >
               Submit Review
             </button>
@@ -317,7 +317,7 @@ function Pagedetails() {
                   {user && String(user.id) === String(r.author?._id) && (
                     <button
                       onClick={() => handleDeleteReview(r._id)}
-                      className="px-3 py-1 text-sm font-medium rounded-md text-red-400 border border-red-400 hover:bg-red-500 hover:text-white transition-all duration-200"
+                      className="px-3 py-1 text-sm font-medium rounded-md text-red-400 border border-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 cursor-pointer"
                     >
                       Delete
                     </button>
