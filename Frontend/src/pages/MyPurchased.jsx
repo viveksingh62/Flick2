@@ -10,55 +10,79 @@ function MyPurchases() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [visible, setVisible] = useState(3);
-  const API_URL = import.meta.env.VITE_BACKEND_URL; 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch purchased prompts
-         const API_URL = import.meta.env.VITE_BACKEND_URL; 
-        const res = await fetch(`${API_URL}/my-purchases`, {
-          credentials: "include",
-         
-        });
-        if (!res.ok) {
-          navigate("/login");
-          return;
-        }
-        const data = await res.json();
-        setPurchases(data.purchases);
-        setUser(data.user);
 
-        // Fetch uploaded prompts
-        const uploadRes = await fetch(`${API_URL}/my-uploads`, {
-          credentials: "include",
-        });
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          setUploads(uploadData.prompts);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
+  // Fetch user data and purchases
+  const fetchUserData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/my-purchases`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        navigate("/login");
+        return;
       }
-    };
+      const data = await res.json();
+      setPurchases(data.purchases);
+      setUser(data.user);
 
-    fetchData();
-  }, [navigate]);
+      // Fetch uploads
+      const uploadRes = await fetch(`${API_URL}/my-uploads`, {
+        credentials: "include",
+      });
+      if (uploadRes.ok) {
+        const uploadData = await uploadRes.json();
+        setUploads(uploadData.prompts);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (loading) return <h1 className="text-center mt-10">Loading...</h1>;
-  if (error) return <h1 className="text-red-500 text-center mt-10">{error}</h1>;
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  // Handle “Load More” uploads
+  const handleLoadMore = () => setVisible((prev) => prev + 5);
+
+  // Handle purchase refund / update dynamically (if you add a buy button)
+  const handlePurchase = async (promptId) => {
+    try {
+      const res = await fetch(`${API_URL}/buy/${promptId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message);
+      } else {
+        // Update user and refetch purchases
+        setUser(data.user);
+        fetchUserData();
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    }
+  };
+
+  if (loading)
+    return <h1 className="text-center mt-10 text-white">Loading...</h1>;
+  if (error)
+    return (
+      <h1 className="text-center mt-10 text-red-500">Error: {error}</h1>
+    );
 
   const validPurchases = purchases.filter((p) => p.promptId);
   const progress = user ? Math.min((user.spent / user.earned) * 100, 100) : 0;
 
-  const handleLoad = () => {
-    setVisible((prev) => prev + 5);
-  };
-
   return (
     <div className="min-h-screen bg-[#1a1a2e] p-4 text-white">
       <Navbar />
+
       <div className="max-w-5xl mx-auto p-6 text-white">
         {/* User Profile Card */}
         {user && (
@@ -121,8 +145,8 @@ function MyPurchases() {
                 <p className="text-gray-300 mb-2">
                   Description: {purchase.promptId.description}
                 </p>
-                <p className="text-gray-300 mb-2">
-                  <b>Prompt</b>: {purchase.promptId.secret}
+                <p className="text-white font-medium mt-2">
+                  Prompt: {purchase.promptId.secret}
                 </p>
                 <p className="text-gray-400 text-sm">
                   Bought on:{" "}
@@ -135,41 +159,6 @@ function MyPurchases() {
                 </p>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Transactions Table */}
-        <h2 className="text-2xl font-bold mb-4 text-white">Transactions</h2>
-        {validPurchases.length === 0 ? (
-          <p className="text-gray-400">No transactions yet.</p>
-        ) : (
-          <div className="overflow-x-auto mb-8">
-            <table className="min-w-full bg-[#16213e] border rounded-lg text-white">
-              <thead>
-                <tr className="bg-[#0f3460] text-left">
-                  <th className="py-2 px-4 border-b">Platform</th>
-                  <th className="py-2 px-4 border-b">Price</th>
-                  <th className="py-2 px-4 border-b">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {validPurchases.map((purchase) => (
-                  <tr key={purchase._id} className="hover:bg-[#0a2540]">
-                    <td className="py-2 px-4 border-b">
-                      {purchase.promptId.platform}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      ₹{purchase.promptId.price}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {purchase.boughtAt
-                        ? new Date(purchase.boughtAt).toLocaleDateString()
-                        : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
 
@@ -203,8 +192,8 @@ function MyPurchases() {
             {visible < uploads.length && (
               <div className="flex justify-center mb-8">
                 <button
-                  className="px-4 sm:px-6 py-2 sm:py-3 bg-[#0f3460] text-white rounded-lg hover:bg-[#16213e] transition-colors duration-200 w-auto"
-                  onClick={handleLoad}
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-[#0f3460] text-white rounded-lg hover:bg-[#16213e] transition-colors duration-200"
+                  onClick={handleLoadMore}
                 >
                   Load More
                 </button>
