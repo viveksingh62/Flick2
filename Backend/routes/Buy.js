@@ -9,19 +9,11 @@ function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
   res.status(401).json({ message: "You must be logged in" });
 }
-router.post("/buy/:id", async (req, res) => {
+router.post("/buy/:id", isLoggedIn, async (req, res) => {
   try {
-    if (!req.user) return res.status(401).json({ message: "Please log in" });
-
     const buyer = await User.findById(req.user._id);
     const prompt = await Prompt.findById(req.params.id).populate("owner");
     if (!prompt) return res.status(404).json({ message: "Prompt not found" });
-
-    const owner = await User.findById(prompt.owner._id);
-
-    // Check if buyer has enough money
-    if (buyer.money < prompt.price)
-      return res.status(400).json({ message: "Not enough balance" });
 
     // Check if already bought
     const alreadyBought = await Purchase.findOne({
@@ -31,35 +23,59 @@ router.post("/buy/:id", async (req, res) => {
     if (alreadyBought)
       return res.status(400).json({ message: "You already bought this prompt" });
 
-    // Update owner and buyer
-    await User.findByIdAndUpdate(owner._id, {
-      $inc: { money: prompt.price, earned: prompt.price, score: 10 },
-    });
-    const updatedBuyer = await User.findByIdAndUpdate(
-      buyer._id,
-      { $inc: { money: -prompt.price, spent: prompt.price } },
-      { new: true }
-    );
+    // Check buyer balance
+    if (buyer.money < prompt.price)
+      return res.status(400).json({ message: "Not enough balance" });
 
-    // Save purchase
-    await new Purchase({ email: buyer.email, promptId: prompt._id }).save();
+    const session = await User.startSession();
+    session.startTransaction();
+    try {
+      // Update owner
+      await User.findByIdAndUpdate(
+        prompt.owner._id,
+        {
+          $inc: { money: prompt.price, earned: prompt.price, score: 10 },
+        },
+        { new: true, session }
+      );
 
-    // Send email
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
-    });
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: buyer.email,
-      subject: `Thanks for visiting PromptFlick : ${prompt.platform}`,
-      text: prompt.secret,
-    });
+      // Update buyer
+      const updatedBuyer = await User.findByIdAndUpdate(
+        buyer._id,
+        { $inc: { money: -prompt.price, spent: prompt.price } },
+        { new: true, session }
+      );
 
-    res.status(200).json({
-      message: "Prompt sent to your email!",
-      user: updatedBuyer,
-    });
+      // Save purchase
+      await new Purchase({
+        email: buyer.email,
+        promptId: prompt._id,
+      }).save({ session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      // Send email
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
+      });
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to: buyer.email,
+        subject: `Thanks for visiting PromptFlick: ${prompt.platform}`,
+        text: prompt.secret,
+      });
+
+      return res.status(200).json({
+        message: "Prompt sent to your email!",
+        user: updatedBuyer,
+      });
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Something went wrong" });

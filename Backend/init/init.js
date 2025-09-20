@@ -1,7 +1,9 @@
-import mongoose from "mongoose";
-import Prompt from "../models/prompModel.js"; // Adjust path as needed
-import User from "../models/User.js";
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Prompt = require("../models/prompModel"); // Adjust path if needed
+const User = require("../models/User");
 
+const MONGO_URL = process.env.ATLASDB_URL
 // Sample prompts data with working Unsplash image URLs
 const initData = [
   {
@@ -482,7 +484,7 @@ const initData = [
 
 // MongoDB connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/Promptflicker")
+  .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB!"))
   .catch((err) => console.log(err));
 

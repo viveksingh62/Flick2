@@ -26,7 +26,7 @@ require("dotenv").config();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://flick-ruddy.vercel.app"    ,
+  "https://promptflick.vercel.app"  ,
   
 ];
 
