@@ -79,7 +79,9 @@ VITE_BACKEND_URL=https://promptflick.onrender.com
 ### Search 
 ![Profile](./screenshots/Search.png)  
 
-###leaderboard
+ ###Create 
+ ![Create](./screenshots/Create.png)
+### leaderboard
 ![Leaderboard](./screenshots/Leaderboard.png)
 
 👨‍💻 Author
