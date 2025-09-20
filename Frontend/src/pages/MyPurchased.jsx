@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Loader from "../components/loader.jsx";
+import Footer from "@/components/Footbar";
 function MyPurchases() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -201,6 +202,7 @@ function MyPurchases() {
           </>
         )}
       </div>
+       <Footer />
     </div>
   );
 }

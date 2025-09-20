@@ -6,7 +6,7 @@ import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import Loader from "../components/loader.jsx";
-
+import Footer from "@/components/Footbar";
 function Pagedetails() {
   const { user } = useAuth();
   const { id } = useParams();
@@ -360,6 +360,7 @@ function Pagedetails() {
           </div>
         )}
       </div>
+      <Footer/>
     </div>
   );
 }
