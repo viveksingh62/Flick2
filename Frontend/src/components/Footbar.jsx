@@ -43,7 +43,7 @@ function Footer() {
 
         {/* Copyright */}
         <div className="text-sm text-gray-400 text-center md:text-right mt-2 md:mt-0">
-          &copy; {new Date().getFullYear()}. All rights reserved.
+          &copy; {new Date().getFullYear()} Promptflick. All rights reserved.
         </div>
       </div>
     </footer>
