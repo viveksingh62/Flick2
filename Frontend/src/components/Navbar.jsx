@@ -28,13 +28,13 @@ export default function Navbar() {
     if (!query.trim()) return;
     navigate(`/search?q=${encodeURIComponent(query)}`);
     setQuery("");
-    setIsOpen(false); // Close sidebar on mobile
+    setIsOpen(false);
   };
 
   const handleCategoryChange = (selected) => {
     setSelectedCategory(selected);
     if (selected) navigate(`/categories/${selected.value}`);
-    setIsOpen(false); // Close sidebar on mobile
+    setIsOpen(false);
   };
 
   const handleNavClick = (path) => {
@@ -45,16 +45,16 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="bg-[#2a2a54] text-white px-6 py-3 shadow-md flex items-center justify-between rounded-lg mb-8">
+      <nav className="bg-[#2a2a54] text-white px-4 py-2 shadow-md flex items-center justify-between rounded-lg mb-8">
         <div className="flex items-center space-x-2">
           <Link to="/">
-            <img src="/logo.png" alt="Logo" className="w-full h-13 cursor-pointer" />
+            <img src="/logo.png" alt="Logo" className="w-32 h-10 cursor-pointer" />
           </Link>
         </div>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex flex-1 max-w-md mx-6">
-          <form onSubmit={handleSearch} className="relative w-1/2">
+        <div className="hidden md:flex flex-1 max-w-md mx-4">
+          <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
               value={query}
@@ -69,9 +69,9 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-4">
           <Link to="/prompt" className="px-4 py-1 rounded-lg hover:bg-white/10">Create</Link>
-          <div className="hidden md:flex w-48 mx-4">
+          <div className="w-48">
             <Select
               options={categoryOptions}
               value={selectedCategory}
@@ -80,7 +80,14 @@ export default function Navbar() {
               isSearchable={false}
               menuPortalTarget={document.body}
               styles={{
-                control: (base) => ({ ...base, borderRadius: "0.5rem", backgroundColor: "#0A2540", borderColor: "rgba(255,255,255,0.2)", padding: "2px 6px", minHeight: "38px" }),
+                control: (base) => ({
+                  ...base,
+                  borderRadius: "0.5rem",
+                  backgroundColor: "#0A2540",
+                  borderColor: "rgba(255,255,255,0.2)",
+                  padding: "2px 6px",
+                  minHeight: "38px",
+                }),
                 singleValue: (base) => ({ ...base, color: "white" }),
                 placeholder: (base) => ({ ...base, color: "rgba(255,255,255,0.6)" }),
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -95,17 +102,16 @@ export default function Navbar() {
             />
           </div>
           <Link to="/about" className="px-4 py-1 rounded-lg hover:bg-white/10">About</Link>
-
           {!user ? (
             <>
-              <Link to="/login" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Login</Link>
-              <Link to="/signup" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Signup</Link>
+              <Link to="/login" className="px-4 py-1 rounded-lg hover:bg-white/10">Login</Link>
+              <Link to="/signup" className="px-4 py-1 rounded-lg hover:bg-white/10">Signup</Link>
             </>
           ) : (
             <>
-              <button onClick={logout} className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">Logout</button>
-              <Link to="/my-purchases" className="px-4 py-1 text-white font-medium rounded-lg hover:bg-white/10 transition">
-                Profile &nbsp; <FontAwesomeIcon icon={faUser} />
+              <button onClick={logout} className="px-4 py-1 rounded-lg hover:bg-white/10">Logout</button>
+              <Link to="/my-purchases" className="px-4 py-1 rounded-lg hover:bg-white/10">
+                <FontAwesomeIcon icon={faUser} /> My Profile
               </Link>
             </>
           )}
@@ -113,7 +119,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger */}
         <button className="md:hidden focus:outline-none" onClick={() => setIsOpen(true)}>
-          <Menu className="w-7 h-7" />
+          <Menu className="w-6 h-6" />
         </button>
       </nav>
 
@@ -132,48 +138,64 @@ export default function Navbar() {
         </div>
 
         <div className="flex flex-col p-4 space-y-4">
-          {/* Mobile Search */}
+          {/* Mobile Search Box inside sidebar */}
           <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search..."
-              className="px-3 py-2 pr-10 rounded-lg border border-gray-300 w-full text-white bg-[#0A2540]"
+              className="px-3 py-2 pr-10 rounded-lg border border-gray-300 w-full text-black bg-[#f0f0f0]"
             />
             <button type="submit">
-              <Search className="absolute right-3 top-2.5 text-gray-400 w-5 h-5" />
+              <Search className="absolute right-2 top-2 text-gray-600 w-4 h-4" />
             </button>
           </form>
 
-          {/* Mobile Category Dropdown */}
-          <div className="w-full">
-            <Select
-              options={categoryOptions}
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-              placeholder="Select Category"
-              isSearchable={false}
-              menuPortalTarget={document.body}
-              styles={{
-                control: (base) => ({ ...base, borderRadius: "0.5rem", backgroundColor: "#0A2540", borderColor: "rgba(255,255,255,0.2)", padding: "2px 6px", minHeight: "38px" }),
-                singleValue: (base) => ({ ...base, color: "white" }),
-                placeholder: (base) => ({ ...base, color: "rgba(255,255,255,0.6)" }),
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                menu: (base) => ({ ...base, zIndex: 9999, backgroundColor: "#0A2540" }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected ? "#10B981" : isFocused ? "rgba(16, 185, 129, 0.3)" : "transparent",
-                  color: "white",
-                  cursor: "pointer",
-                }),
-              }}
-            />
-          </div>
+          {/* Profile button */}
+          {user && (
+            <Link
+              to="/my-purchases"
+              onClick={() => setIsOpen(false)}
+              className="px-4 py-2 text-white bg-emerald-500 rounded-lg text-center"
+            >
+              <FontAwesomeIcon icon={faUser} /> My Profile
+            </Link>
+          )}
 
           {/* Mobile Links */}
           <button onClick={() => handleNavClick("/prompt")} className="text-gray-700 hover:text-emerald-600">Create</button>
           <button onClick={() => handleNavClick("/about")} className="text-gray-700 hover:text-emerald-600">About</button>
+
+          {/* Mobile Category Dropdown */}
+          <Select
+            options={categoryOptions}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            placeholder="Select Category"
+            isSearchable={false}
+            menuPortalTarget={document.body}
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderRadius: "0.5rem",
+                backgroundColor: "#0A2540",
+                borderColor: "rgba(255,255,255,0.2)",
+                padding: "2px 6px",
+                minHeight: "38px",
+              }),
+              singleValue: (base) => ({ ...base, color: "white" }),
+              placeholder: (base) => ({ ...base, color: "rgba(255,255,255,0.6)" }),
+              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              menu: (base) => ({ ...base, zIndex: 9999, backgroundColor: "#0A2540" }),
+              option: (base, { isFocused, isSelected }) => ({
+                ...base,
+                backgroundColor: isSelected ? "#10B981" : isFocused ? "rgba(16, 185, 129, 0.3)" : "transparent",
+                color: "white",
+                cursor: "pointer",
+              }),
+            }}
+          />
 
           {!user ? (
             <>
@@ -181,15 +203,7 @@ export default function Navbar() {
               <button onClick={() => handleNavClick("/signup")} className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Signup</button>
             </>
           ) : (
-            <button
-              onClick={() => {
-                logout();
-                setIsOpen(false);
-              }}
-              className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
-            >
-              Logout
-            </button>
+            <button onClick={() => { logout(); setIsOpen(false); }} className="px-4 py-2 text-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Logout</button>
           )}
         </div>
       </motion.div>
