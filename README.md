@@ -94,6 +94,7 @@ VITE_BACKEND_URL=https://promptflick.onrender.com
   <img src="./screenshots/Leaderboard.png" alt="Leaderboard" width="45%" />
 </p>
 
+> ⚠️ Note: Currently, all purchases use **demo coins**. Real payments will be enabled in future versions.
 
 👨‍💻 Author
 
