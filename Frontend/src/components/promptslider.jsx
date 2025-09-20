@@ -52,7 +52,7 @@ export default function PromptSlider() {
           1024: { slidesPerView: 4 },
         }}
       >
-        {prompts.slice(0, 20).map((prompt) => (
+        {prompts.slice(4, 20).map((prompt) => (
           <SwiperSlide
             key={prompt._id}
             className="!h-auto !w-auto flex justify-center"
