@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
+import Loader from "../components/Loader";
 function MyPurchases() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -69,8 +69,7 @@ function MyPurchases() {
     }
   };
 
-  if (loading)
-    return <h1 className="text-center mt-10 text-white">Loading...</h1>;
+   if (loading) return <Loader />;
   if (error)
     return (
       <h1 className="text-center mt-10 text-red-500">Error: {error}</h1>

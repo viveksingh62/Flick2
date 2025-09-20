@@ -5,8 +5,10 @@ import Navbar from "../components/Navbar";
 import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-
+import Loader from "../components/Loader";
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
 function Pagedetails() {
+  
   const { user } = useAuth();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -144,10 +146,7 @@ function Pagedetails() {
     }
   };
 
-  if (loading)
-    return (
-      <h1 className="text-xl font-semibold text-center mt-10">Loading...</h1>
-    );
+  if (loading) return <Loader />;
   if (error)
     return <h1 className="text-red-500 text-center mt-10">Error: {error}</h1>;
   if (!data) return <h1 className="text-center mt-10">No Data Found</h1>;
@@ -196,7 +195,7 @@ function Pagedetails() {
                   onClick={async () => {
                     try {
                       const res = await fetch(
-                        `http://localhost:8080/prompt/${data._id}`,
+                        `${API_URL}/prompt/${data._id}`,
                         { method: "DELETE", credentials: "include" },
                       );
                       if (res.ok) navigate("/");
@@ -217,7 +216,7 @@ function Pagedetails() {
                   </p>
                 ) : (
                   <button
-                    className="w-full px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-600 hover:to-green-700 transition"
+                    className="w-full px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-600 hover:to-green-700 transition cursor-pointer"
                     onClick={handleBuy}
                   >
                     Buy Prompt
