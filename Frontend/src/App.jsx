@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import CategoryPage from "./pages/Categorypage";
 import MyPurchases from "./pages/MyPurchased";
 import SearchResults from "./components/Searchresults";
+
 function App() {
   const router = createBrowserRouter([
     {

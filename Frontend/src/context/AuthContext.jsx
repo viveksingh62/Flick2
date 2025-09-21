@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
         const API_URL = import.meta.env.VITE_BACKEND_URL;
       
         const res = await fetch(`${API_URL}/check-auth`, {
-          credentials: "include", // include cookies
+          credentials: "include", // include cookies  
           headers: {
             'Content-Type': 'application/json',
           },

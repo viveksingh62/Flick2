@@ -89,21 +89,31 @@ function Pagedetails() {
   }, [data]);
 
   const handleBuy = async () => {
-    setMessage(null);
-    try {
-      const res = await fetch(`${API_URL}/buy/${data._id}`, {
-        method: "POST",
-        credentials: "include",
-      });
-      const result = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(result?.message || "Failed to buy prompt");
+  setMessage(null);
+  try {
+    const res = await fetch(`${API_URL}/buy/${data._id}`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const result = await res.json().catch(() => null);
 
-      setMessage({ type: "success", text: result.message });
+    if (res.ok) {
+      setMessage({ type: "success", text: result.message || "Purchase successful!" });
       setAlreadyBought(true);
-    } catch (err) {
-      setMessage({ type: "error", text: err.message });
+    } else {
+      // if backend says "already purchased", treat it as success
+      if (result?.message?.toLowerCase().includes("already")) {
+        setAlreadyBought(true);
+        setMessage({ type: "success", text: "You already own this prompt." });
+      } else {
+        setMessage({ type: "error", text: result?.message || "Purchase failed" });
+      }
     }
-  };
+  } catch (err) {
+    setMessage({ type: "error", text: err.message });
+  }
+};
+
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Navbar from "./Navbar";
-
+import Loader from "./loader";
 function New() {
   const navigate = useNavigate();
  const API_URL = import.meta.env.VITE_BACKEND_URL;

@@ -20,8 +20,13 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       email: buyer.email,
       promptId: prompt._id,
     });
-    if (alreadyBought)
-      return res.status(400).json({ message: "You already bought this prompt" });
+    if (alreadyBought) {
+  return res.status(200).json({ 
+    message: "You already bought this prompt", 
+    alreadyBought: true 
+  });
+}
+
 
     // Check buyer balance
     if (buyer.money < prompt.price)
