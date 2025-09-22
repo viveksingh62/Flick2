@@ -135,7 +135,7 @@ app.get("/check-auth", (req, res) => {
 
 //home route
 app.get("/", async (req, res) => {
-  const data = await Prompt.find({}).populate("owner");
+  const data = await Prompt.find({}).populate("owner").sort({ createdAt: -1 }); ;
   res.json(data);
 });
 //filter

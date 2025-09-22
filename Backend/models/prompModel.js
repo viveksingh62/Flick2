@@ -16,8 +16,9 @@ const promptSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: "Review",
     },
+
   ],
-});
+} ,{ timestamps: true });
 
 promptSchema.index(
   {
@@ -30,6 +31,7 @@ promptSchema.index(
       platform: 1,
     },
   },
+    { timestamps: true }
 );
 
 promptSchema.pre("remove", async function (next) {

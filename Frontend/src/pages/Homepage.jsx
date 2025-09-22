@@ -78,7 +78,7 @@ export default function Homepage() {
             <Section title="Top Prompts" items={data.slice(0, 5)} />
             <Section title="Most Buyed" items={data.slice(5, 10)} />
             <Section title="Most Favorite" items={data.slice(10, 15)} />
-            <Section title="New Collection" items={data.slice(15, 20)} />
+            <Section title="New Collection" items={data.slice(7, 12)} />
           </div>
         </div>
 

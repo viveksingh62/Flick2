@@ -1,203 +1,180 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Rating from "@mui/material/Rating";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import Loader from "../components/loader.jsx";
-import CircularProgress from "@mui/material/CircularProgress";
+import Loader from "@/components/loader";
 import Footer from "@/components/Footbar";
 
-function Pagedetails() {
-  const { user } = useAuth();
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [alreadyBought, setAlreadyBought] = useState(false);
-  const [buying, setBuying] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [reviewText, setReviewText] = useState("");
-  const [rating, setRating] = useState(0);
-  const [relatedPrompts, setRelatedPrompts] = useState([]);
+function MyPurchases() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [purchases, setPurchases] = useState([]);
+  const [uploads, setUploads] = useState([]);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const [visible, setVisible] = useState(3);
+  const [expanded, setExpanded] = useState({});
+
   const API_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      setError(null);
       try {
-        const res = await fetch(`${API_URL}/prompt/${id}`, { credentials: "include" });
-        if (!res.ok) throw new Error("Failed to fetch prompt details");
-        const json = await res.json();
-        setData(json);
-
-        const reviewRes = await fetch(`${API_URL}/prompt/${id}/reviews`, { credentials: "include" });
-        if (reviewRes.ok) {
-          const reviewData = await reviewRes.json();
-          setReviews(reviewData || []);
+        const res = await fetch(`${API_URL}/my-purchases`, {
+          credentials: "include",
+        });
+        if (!res.ok) {
+          navigate("/login");
+          return;
         }
+        const data = await res.json();
+        setPurchases(data.purchases);
+        setUser(data.user);
 
-        if (user) {
-          const purchaseres = await fetch(`${API_URL}/my-purchases`, { credentials: "include" });
-          if (purchaseres.ok) {
-            const data = await purchaseres.json();
-            const purchasesArray = data.purchases || [];
-            const hasBought = purchasesArray.some(
-              (p) => String(p.promptId?._id) === String(json._id)
-            );
-            setAlreadyBought(hasBought);
-          }
+        const uploadRes = await fetch(`${API_URL}/my-uploads`, {
+          credentials: "include",
+        });
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          setUploads(uploadData.prompts);
         }
       } catch (err) {
-        console.error(err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
-  }, [id, user]);
-
-  useEffect(() => {
-    if (data && data.platform) {
-      const fetchRelated = async () => {
-        try {
-          const res = await fetch(`${API_URL}/prompts/${data.platform}`);
-          const json = await res.json();
-          if (json.success) setRelatedPrompts(json.prompts.filter((p) => p._id !== data._id));
-        } catch (err) {
-          console.error("Failed to fetch related prompts:", err);
-        }
-      };
-      fetchRelated();
-    }
-  }, [data]);
-
-  const handleBuy = async () => {
-    setBuying(true);
-    setMessage(null);
-    try {
-      const res = await fetch(`${API_URL}/buy/${data._id}`, { method: "POST", credentials: "include" });
-      const result = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(result?.message || "Failed to buy prompt");
-      setMessage({ type: "success", text: result.message });
-      setAlreadyBought(true);
-    } catch (err) {
-      setMessage({ type: "error", text: err.message });
-    } finally {
-      setBuying(false);
-    }
-  };
-
-  const handleReviewSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${API_URL}/prompt/${id}/review`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ rating, comment: reviewText }),
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result?.message || "Failed to post review");
-      setReviews((prev) => [result.review, ...prev]);
-      setReviewText("");
-      setRating(0);
-    } catch (err) {
-      setMessage({ type: "error", text: err.message });
-    }
-  };
-
-  const handleDeleteReview = async (reviewId) => {
-    try {
-      const res = await fetch(`${API_URL}/prompt/${data._id}/review/${reviewId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to delete review");
-      setReviews(reviews.filter((rev) => rev._id !== reviewId));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  }, [navigate]);
 
   if (loading) return <Loader />;
-  if (error) return <h1 className="text-red-500 text-center mt-10">Error: {error}</h1>;
-  if (!data) return <h1 className="text-center mt-10">No Data Found</h1>;
+  if (error)
+    return <h1 className="text-red-500 text-center mt-10">{error}</h1>;
 
-  const avgRating =
-    reviews.length > 0
-      ? (reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length).toFixed(1)
-      : 0;
+  const validPurchases = purchases.filter((p) => p.promptId);
+
+  const handleLoad = () => {
+    setVisible((prev) => prev + 5);
+  };
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   return (
+    <>
     <div className="min-h-screen bg-[#1a1a2e] p-4 text-white">
       <Navbar />
-      <div className="max-w-5xl mx-auto mt-6 space-y-6">
-        {/* Prompt Card */}
-        <div className="bg-[#16213e] rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row">
-          <div className="md:w-1/2 w-full h-96 md:h-auto">
-            <img src={data.images} alt={data.platform} className="w-full h-full object-cover" />
-          </div>
-          <div className="md:w-1/2 w-full p-6 flex flex-col justify-between">
+      <div className="max-w-5xl mx-auto p-6 text-white space-y-8">
+        {/* User Profile Card */}
+        {user && (
+          <div className="bg-[#16213e] rounded-xl shadow-md p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-6">
             <div>
-              <h2 className="text-3xl font-bold mb-2">{data.platform}</h2>
-              <p className="text-gray-300 mb-2">Owner: {data.owner?.username}</p>
-              <p className="text-gray-300 mb-4">{data.description}</p>
-              <p className="text-xl font-semibold mb-4 text-[#e94560]">{data.price} ₹</p>
+              <h1 className="text-3xl font-bold">{user.username}</h1>
+              <p className="text-gray-300 text-sm">{user.email}</p>
             </div>
-
-            <div className="space-y-3">
-              {!user ? (
-                <p className="w-full text-center py-2 bg-[#0f3460] text-gray-300 font-semibold rounded-lg">
-                  Login to buy the prompt
-                </p>
-              ) : String(user.id) !== String(data.owner?._id) ? (
-                <button
-                  className={`w-full px-6 py-2 font-semibold rounded-lg shadow text-white transition 
-                    ${
-                      alreadyBought
-                        ? "bg-gray-600 cursor-not-allowed"
-                        : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 cursor-pointer"
-                    }`}
-                  onClick={handleBuy}
-                  disabled={alreadyBought || buying}
-                >
-                  {buying ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <CircularProgress size={20} style={{ color: "#fff" }} />
-                      Processing...
-                    </div>
-                  ) : alreadyBought ? (
-                    "Already Bought"
-                  ) : (
-                    "Buy Prompt"
-                  )}
-                </button>
-              ) : null}
-
-              {message && (
-                <p
-                  className={`mt-2 text-center font-medium ${
-                    message.type === "success" ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  {message.text}
-                </p>
-              )}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              <div className="bg-[#0f3460] p-3 rounded-lg">
+                <p className="text-gray-400 text-xs sm:text-sm">Score</p>
+                <p className="font-semibold">{user.score}</p>
+              </div>
+              <div className="bg-[#0f3460] p-3 rounded-lg">
+                <p className="text-gray-400 text-xs sm:text-sm">Money</p>
+                <p className="font-semibold">₹{user.money}</p>
+              </div>
+              <div className="bg-[#0f3460] p-3 rounded-lg">
+                <p className="text-gray-400 text-xs sm:text-sm">Spent</p>
+                <p className="font-semibold">₹{user.spent}</p>
+              </div>
+              <div className="bg-[#0f3460] p-3 rounded-lg">
+                <p className="text-gray-400 text-xs sm:text-sm">Earned</p>
+                <p className="font-semibold">₹{user.earned}</p>
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Purchased Prompts */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">My Purchased Prompts</h2>
+          {validPurchases.length === 0 ? (
+            <p className="text-gray-400">You haven’t bought any prompts yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {validPurchases.map((purchase) => (
+                <div
+                  key={purchase._id}
+                  className="p-4 border rounded-lg shadow-md bg-[#16213e] flex flex-col justify-between"
+                >
+                  <h3 className="text-lg font-semibold mb-1">
+                    {purchase.promptId.platform}
+                  </h3>
+                  <p className="text-gray-300 mb-2 text-sm">
+                    {purchase.promptId.description}
+                  </p>
+                  <button
+                    className="text-[#00ffcc] font-semibold mb-2 text-sm"
+                    onClick={() => toggleExpand(purchase._id)}
+                  >
+                    {expanded[purchase._id] ? "− Hide Prompt" : "+ Show Prompt"}
+                  </button>
+                  {expanded[purchase._id] && (
+                    <p className="text-gray-300 mb-2 text-sm">
+                      {purchase.promptId.secret}
+                    </p>
+                  )}
+                  <p className="text-gray-400 text-xs mb-1">
+                    Bought on:{" "}
+                    {purchase.boughtAt
+                      ? new Date(purchase.boughtAt).toLocaleDateString()
+                      : "—"}
+                  </p>
+                  <p className="text-white font-medium">Price: ₹{purchase.promptId.price}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Reviews & Related Prompts Sections remain the same as your previous code */}
+        {/* Uploaded Prompts */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">My Uploaded Prompts</h2>
+          {uploads.length === 0 ? (
+            <p className="text-gray-400">You haven’t uploaded any prompts yet.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {uploads.slice(0, visible).map((prompt) => (
+                  <div
+                    key={prompt._id}
+                    className="p-4 border rounded-lg shadow-md bg-[#16213e] flex flex-col justify-between"
+                  >
+                    <h3 className="text-lg font-semibold mb-1">{prompt.platform}</h3>
+                    <p className="text-gray-300 mb-2 text-sm">{prompt.description}</p>
+                    <p className="text-white font-medium">Price: ₹{prompt.price}</p>
+                  </div>
+                ))}
+              </div>
+              {visible < uploads.length && (
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={handleLoad}
+                    className="px-4 py-2 bg-[#0f3460] text-white rounded-lg hover:bg-[#16213e] transition-colors duration-200"
+                  >
+                    Load More
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-      <Footer />
     </div>
+    <Footer/></>
   );
 }
 
-export default Pagedetails;
+export default MyPurchases;
