@@ -327,3 +327,7 @@ app.get("/prompts/:platform", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+// for health 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
+});
