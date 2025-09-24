@@ -9,6 +9,7 @@ function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
   res.status(401).json({ message: "You must be logged in" });
 }
+
 router.post("/buy/:id", isLoggedIn, async (req, res) => {
   try {
     const buyer = await User.findById(req.user._id);
@@ -21,12 +22,11 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       promptId: prompt._id,
     });
     if (alreadyBought) {
-  return res.status(200).json({ 
-    message: "You already bought this prompt", 
-    alreadyBought: true 
-  });
-}
-
+      return res.status(200).json({
+        message: "You already bought this prompt",
+        alreadyBought: true,
+      });
+    }
 
     // Check buyer balance
     if (buyer.money < prompt.price)
@@ -34,6 +34,8 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
 
     const session = await User.startSession();
     session.startTransaction();
+
+    let updatedBuyer;
     try {
       // Update owner
       await User.findByIdAndUpdate(
@@ -45,7 +47,7 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       );
 
       // Update buyer
-      const updatedBuyer = await User.findByIdAndUpdate(
+      updatedBuyer = await User.findByIdAndUpdate(
         buyer._id,
         { $inc: { money: -prompt.price, spent: prompt.price } },
         { new: true, session }
@@ -58,13 +60,20 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       }).save({ session });
 
       await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
       session.endSession();
+    }
 
-      // Send email
+    // Try sending email separately
+    try {
       const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
       });
+
       await transporter.sendMail({
         from: process.env.GMAIL_USER,
         to: buyer.email,
@@ -76,10 +85,13 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
         message: "Prompt sent to your email!",
         user: updatedBuyer,
       });
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
-      throw err;
+    } catch (mailErr) {
+      console.error("Email sending failed:", mailErr);
+      return res.status(200).json({
+        message:
+          "Purchase successful, but email could not be sent. Please contact support.",
+        user: updatedBuyer,
+      });
     }
   } catch (err) {
     console.error(err);
@@ -87,18 +99,17 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
   }
 });
 
-
-router.get("/my-purchases",async (req, res) => {
+router.get("/my-purchases", async (req, res) => {
   try {
     if (!req.user) {
-       return res.status(401).json({ message: "You must logged in" });
+      return res.status(401).json({ message: "You must logged in" });
     }
 
     const user = await User.findById(req.user._id).select(
-      "username email score spent earned money",
+      "username email score spent earned money"
     );
     const purchases = await Purchase.find({ email: req.user.email }).populate(
-      "promptId",
+      "promptId"
     );
     res.json({
       user,
@@ -106,7 +117,8 @@ router.get("/my-purchases",async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).message({ message: "Something went wrong" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 });
+
 module.exports = router;
