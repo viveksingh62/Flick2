@@ -72,7 +72,8 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
-      });
+      }
+    );
       console.log(transporter)
 
       let send = await transporter.sendMail({
@@ -81,8 +82,8 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
          replyTo: buyer.email,
         subject: `Thanks for visiting PromptFlick: ${prompt.platform}`,
         text: prompt.secret,
-      });
-
+      }  );
+      console.log(send.response)
       return res.status(200).json({
         message: "Prompt sent to your email!",
         user: updatedBuyer,
