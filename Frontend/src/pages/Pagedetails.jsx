@@ -229,7 +229,7 @@ function Pagedetails() {
                   onClick={handleBuy}
                   disabled={alreadyBought}
                 >
-                  {alreadyBought ? "Already Bought" : "Buy Prompt"}
+                  {alreadyBought ? "Already bought! You can view it in your profile.": "Buy Prompt"}
                 </button>
               ) : null}
 
