@@ -73,10 +73,12 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
         service: "Gmail",
         auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
       });
+      console.log(transporter)
 
-      await transporter.sendMail({
+      let send = await transporter.sendMail({
         from: process.env.GMAIL_USER,
         to: buyer.email,
+         replyTo: buyer.email,
         subject: `Thanks for visiting PromptFlick: ${prompt.platform}`,
         text: prompt.secret,
       });
