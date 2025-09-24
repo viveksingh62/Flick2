@@ -85,14 +85,15 @@ router.post("/buy/:id", isLoggedIn, async (req, res) => {
       }  );
       console.log(send.response)
       return res.status(200).json({
-        message: "Prompt sent to your email!",
+     message: "Prompt sent to your email! You can also view it in your profile."
+,
         user: updatedBuyer,
       });
     } catch (mailErr) {
       console.error("Email sending failed:", mailErr);
       return res.status(200).json({
-        message:
-          "Purchase successful, but email could not be sent. Please contact support.",
+        message: "Purchase successful, but email could not be sent. Please contact support at promptflick@gmail.com.",
+
         user: updatedBuyer,
       });
     }
