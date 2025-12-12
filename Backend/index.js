@@ -50,6 +50,12 @@
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
+
+   app.use(passport.initialize());
+  app.use(passport.session());
+  passport.use(new LocalStrategy(User.authenticate()));
+  passport.serializeUser(User.serializeUser());
+  passport.deserializeUser(User.deserializeUser());
     app.use(
     session({
       store,
@@ -69,11 +75,7 @@
   );
 
 
-  app.use(passport.initialize());
-  app.use(passport.session());
-  passport.use(new LocalStrategy(User.authenticate()));
-  passport.serializeUser(User.serializeUser());
-  passport.deserializeUser(User.deserializeUser());
+ 
   function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.status(401).json({ message: "You must be logged in" });
