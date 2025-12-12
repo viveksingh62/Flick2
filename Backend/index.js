@@ -50,30 +50,7 @@
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
-
-
-  const dburl = process.env.ATLASDB_URL;
-  const port = process.env.PORT || 8080;
-  mongoose
-    .connect(dburl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000,
-    })
-    .then(() => console.log("✅ Connected to MongoDB Atlas"))
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-  //session
-  const store = MongoStore.create({ mongoUrl: dburl,
-    crypto:{
-      secret:process.env.SESSION_SECRET
-    },
-    touchAfter:24*3600
-  });
-  store.on("error",(err)=>{
-    console.log("Error in Mongo SESSION STORE",err)
-  })
-  app.use(
+    app.use(
     session({
       store,
         
@@ -101,6 +78,30 @@
     if (req.isAuthenticated()) return next();
     res.status(401).json({ message: "You must be logged in" });
   }
+
+
+  const dburl = process.env.ATLASDB_URL;
+  const port = process.env.PORT || 8080;
+  mongoose
+    .connect(dburl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000,
+    })
+    .then(() => console.log("✅ Connected to MongoDB Atlas"))
+    .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+  //session
+  const store = MongoStore.create({ mongoUrl: dburl,
+    crypto:{
+      secret:process.env.SESSION_SECRET
+    },
+    touchAfter:24*3600
+  });
+  store.on("error",(err)=>{
+    console.log("Error in Mongo SESSION STORE",err)
+  })
+
 
   // app.get("/demouser", async (req, res) => {
   //   let fakeuser = new User({
@@ -137,6 +138,7 @@
   console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
 console.log("ATLASDB_URL:", process.env.ATLASDB_URL);
 console.log("NODE_ENV:", process.env.NODE_ENV);
+
 
 
   //home route
