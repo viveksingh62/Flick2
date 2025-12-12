@@ -50,25 +50,6 @@
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
-
-   app.use(passport.initialize());
-  app.use(passport.session());
-  passport.use(new LocalStrategy(User.authenticate()));
-  passport.serializeUser(User.serializeUser());
-  passport.deserializeUser(User.deserializeUser());
-   //session
-
- const dburl = process.env.ATLASDB_URL;
-  const port = process.env.PORT || 8080;
-  const store = MongoStore.create({ mongoUrl: dburl,
-    crypto:{
-      secret:process.env.SESSION_SECRET
-    },
-    touchAfter:24*3600
-  });
-  store.on("error",(err)=>{
-    console.log("Error in Mongo SESSION STORE",err)
-  })
     app.use(
     session({
       store,
@@ -88,14 +69,19 @@
   );
 
 
- 
+  app.use(passport.initialize());
+  app.use(passport.session());
+  passport.use(new LocalStrategy(User.authenticate()));
+  passport.serializeUser(User.serializeUser());
+  passport.deserializeUser(User.deserializeUser());
   function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.status(401).json({ message: "You must be logged in" });
   }
 
 
- 
+  const dburl = process.env.ATLASDB_URL;
+  const port = process.env.PORT || 8080;
   mongoose
     .connect(dburl, {
       useNewUrlParser: true,
@@ -105,7 +91,16 @@
     .then(() => console.log("✅ Connected to MongoDB Atlas"))
     .catch((err) => console.error("❌ MongoDB connection error:", err));
 
- 
+  //session
+  const store = MongoStore.create({ mongoUrl: dburl,
+    crypto:{
+      secret:process.env.SESSION_SECRET
+    },
+    touchAfter:24*3600
+  });
+  store.on("error",(err)=>{
+    console.log("Error in Mongo SESSION STORE",err)
+  })
 
 
   // app.get("/demouser", async (req, res) => {
@@ -143,7 +138,7 @@
   console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
 console.log("ATLASDB_URL:", process.env.ATLASDB_URL);
 console.log("NODE_ENV:", process.env.NODE_ENV);
-
+console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
 
 
   //home route
