@@ -57,6 +57,9 @@
   passport.serializeUser(User.serializeUser());
   passport.deserializeUser(User.deserializeUser());
    //session
+
+ const dburl = process.env.ATLASDB_URL;
+  const port = process.env.PORT || 8080;
   const store = MongoStore.create({ mongoUrl: dburl,
     crypto:{
       secret:process.env.SESSION_SECRET
@@ -92,8 +95,7 @@
   }
 
 
-  const dburl = process.env.ATLASDB_URL;
-  const port = process.env.PORT || 8080;
+ 
   mongoose
     .connect(dburl, {
       useNewUrlParser: true,
