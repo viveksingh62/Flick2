@@ -56,7 +56,7 @@ mongoose
 // --- Session store ---
 const store = MongoStore.create({
   mongoUrl: dburl,
-  crypto: { secret: process.env.SESSION_SECRET },
+  // crypto: { secret: process.env.SESSION_SECRET },
   touchAfter: 24 * 3600,
 });
 store.on("error", (err) => console.log("MongoStore error:", err));
