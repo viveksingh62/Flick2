@@ -24,6 +24,8 @@ app.use(express.json());
 app.set("trust proxy", 1); // trust first proxy
 require("dotenv").config();
 
+console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://promptflick.vercel.app"  ,
