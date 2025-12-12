@@ -56,6 +56,16 @@
   passport.use(new LocalStrategy(User.authenticate()));
   passport.serializeUser(User.serializeUser());
   passport.deserializeUser(User.deserializeUser());
+   //session
+  const store = MongoStore.create({ mongoUrl: dburl,
+    crypto:{
+      secret:process.env.SESSION_SECRET
+    },
+    touchAfter:24*3600
+  });
+  store.on("error",(err)=>{
+    console.log("Error in Mongo SESSION STORE",err)
+  })
     app.use(
     session({
       store,
@@ -93,16 +103,7 @@
     .then(() => console.log("✅ Connected to MongoDB Atlas"))
     .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-  //session
-  const store = MongoStore.create({ mongoUrl: dburl,
-    crypto:{
-      secret:process.env.SESSION_SECRET
-    },
-    touchAfter:24*3600
-  });
-  store.on("error",(err)=>{
-    console.log("Error in Mongo SESSION STORE",err)
-  })
+ 
 
 
   // app.get("/demouser", async (req, res) => {
