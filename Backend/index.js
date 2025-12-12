@@ -111,9 +111,7 @@
   //   let newUser = await User.register(fakeuser, "helloworld");
   //   console.log(newUser);
   // });
-  app.listen(port, () => {
-    console.log(`port is listing on 8080`);
-  });
+
   app.use("/", userRouter);
   app.use("/", buyRouter);
   app.use("/", leaderboardRouter);
@@ -133,6 +131,12 @@
       return res.json({ authenticated: false });
     }
   });
+  app.listen(port, () => {
+    console.log(`port is listing on 8080`);
+  });
+  console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
+console.log("ATLASDB_URL:", process.env.ATLASDB_URL);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 
   //home route
